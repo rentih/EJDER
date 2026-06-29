@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ejderha Hanı</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#080810;color:#e8e8f0;min-height:100vh;padding:10px}
+h1{text-align:center;font-size:19px;color:#c084fc;margin-bottom:2px}
+.col2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:7px}
+.col3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:7px}
+.col4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:7px}
+.stat-card{background:#12121f;border:1px solid #2a2a3d;border-radius:9px;padding:7px 9px}
+.stat-label{font-size:10px;color:#6b7280;margin-bottom:2px}
+.stat-val{font-size:15px;font-weight:600;color:#f9d71c}
+.card{background:#12121f;border:1px solid #2a2a3d;border-radius:11px;padding:10px 12px;margin-bottom:7px}
+.card-title{font-size:12px;font-weight:600;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.bar-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.bar-label{font-size:10px;color:#6b7280;width:20px}
+.bar-wrap{flex:1;background:#2a2a3d;border-radius:4px;height:8px;overflow:hidden}
+.bar{height:100%;border-radius:4px;transition:width 0.3s}
+.bar-hp{background:linear-gradient(90deg,#dc2626,#f87171)}
+.bar-xp{background:linear-gradient(90deg,#2563eb,#60a5fa)}
+.bar-ehp{background:linear-gradient(90deg,#d97706,#fbbf24)}
+.bar-elite{background:linear-gradient(90deg,#7c3aed,#c084fc)}
+.bar-boss{background:linear-gradient(90deg,#991b1b,#ef4444)}
+.bar-txt{font-size:10px;color:#6b7280;min-width:52px;text-align:right}
+.hero-stats{display:flex;gap:12px;font-size:11px;color:#9ca3af;margin-top:6px;flex-wrap:wrap}
+.hero-stats span{color:#e8e8f0;font-weight:600}
+.stage-banner{text-align:center;padding:7px;margin-bottom:7px;background:#12121f;border-radius:10px;border:1px solid #2a2a3d}
+.stage-num{font-size:20px;font-weight:700;color:#c084fc}
+.stage-type{font-size:11px;margin-top:1px;margin-bottom:5px}
+.stage-progress{display:flex;align-items:center;gap:7px}
+.stage-bar-wrap{flex:1;background:#2a2a3d;border-radius:4px;height:6px;overflow:hidden}
+.stage-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,#7c3aed,#c084fc);transition:width 0.4s}
+.enemy-area{text-align:center;padding:2px 0 5px}
+.enemy-emoji{font-size:40px;display:block;margin-bottom:3px;transition:transform 0.08s}
+.enemy-emoji.hit{transform:scale(1.18)}
+.enemy-name{font-size:13px;font-weight:600;margin-bottom:5px}
+.boss-label{display:inline-block;font-size:10px;padding:2px 8px;border-radius:5px;margin-bottom:4px;font-weight:700}
+.bl-elite{background:#4c1d95;color:#e9d5ff}
+.bl-boss{background:#1e3a8a;color:#bfdbfe}
+.bl-mega{background:#7f1d1d;color:#fca5a5;animation:blink 0.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.6}}
+.tabs{display:flex;gap:3px;margin-bottom:7px;flex-wrap:wrap}
+.tab{flex:1;min-width:44px;font-size:10px;padding:6px 2px;border-radius:7px;border:1px solid #2a2a3d;background:#12121f;cursor:pointer;color:#6b7280;font-family:inherit;transition:all 0.15s;text-align:center;position:relative}
+.tab.active{background:#1e0a3c;color:#c084fc;border-color:#7c3aed}
+.tab .nd{position:absolute;top:2px;right:4px;width:6px;height:6px;background:#ef4444;border-radius:99px}
+.panel{display:none}.panel.show{display:block}
+.btn{width:100%;text-align:left;padding:8px 10px;border-radius:8px;border:1px solid #2a2a3d;background:#12121f;cursor:pointer;color:#e8e8f0;margin-bottom:5px;font-family:inherit;transition:all 0.15s}
+.btn:hover{background:#1e1e30}.btn:disabled{opacity:0.32;cursor:not-allowed}
+.btn-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:500}
+.btn-desc{font-size:10px;color:#6b7280;margin-top:2px}
+.btn-cost{font-size:11px;color:#f9d71c}
+/* EQUIP */
+.equip-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.equip-slot{background:#12121f;border:1px solid #2a2a3d;border-radius:9px;padding:8px 10px;min-height:80px;position:relative}
+.equip-slot-label{font-size:10px;color:#6b7280;margin-bottom:3px}
+.equip-slot-name{font-size:11px;font-weight:600;margin-bottom:2px}
+.equip-slot-stat{font-size:10px;color:#4ade80;margin-bottom:2px}
+.equip-slot-lvl{font-size:10px;color:#f9d71c;margin-bottom:2px}
+.equip-slot-rune{font-size:10px;color:#c084fc;margin-bottom:4px}
+.equip-slot-btns{display:flex;gap:4px;flex-wrap:wrap}
+.eq-btn{font-size:10px;padding:3px 6px;border-radius:5px;border:none;cursor:pointer;font-family:inherit;font-weight:600}
+.eq-btn:disabled{opacity:0.35;cursor:not-allowed}
+.eq-enhance{background:#1e3a8a;color:#bfdbfe}
+.eq-reforge{background:#4c1d95;color:#e9d5ff}
+.eq-evolve{background:#7f1d1d;color:#fca5a5}
+.eq-rune{background:#134e4a;color:#6ee7b7}
+.equip-empty{font-size:10px;color:#374151;margin-top:8px}
+.r-normal{color:#e8e8f0}.r-rare{color:#60a5fa}.r-epic{color:#c084fc}.r-legendary{color:#f59e0b}.r-chaos{color:#f87171;text-shadow:0 0 6px #f87171}
+/* SHOP */
+.shop-item{width:100%;text-align:left;padding:8px 10px;border-radius:8px;border:1px solid #2a2a3d;background:#12121f;cursor:pointer;color:#e8e8f0;margin-bottom:5px;font-family:inherit}
+.shop-item:disabled{opacity:0.32;cursor:not-allowed}
+/* RUNE */
+.rune-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px}
+.rune-card{background:#12121f;border:1px solid #2a2a3d;border-radius:8px;padding:7px 5px;text-align:center}
+.rune-icon{font-size:20px;margin-bottom:2px}
+.rune-name{font-size:10px;font-weight:600}
+.rune-stat{font-size:9px;color:#6b7280;margin-top:1px}
+.rune-count{font-size:11px;color:#f9d71c;font-weight:600;margin-top:2px}
+/* DUNGEON */
+.dungeon-card{background:#12121f;border:1px solid #2a2a3d;border-radius:11px;padding:10px 12px;margin-bottom:7px}
+.dungeon-title{font-size:13px;font-weight:600;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center}
+.dungeon-info{font-size:10px;color:#6b7280;margin-bottom:7px;line-height:1.6}
+.dungeon-btn{width:100%;padding:8px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;margin-bottom:4px}
+.dungeon-btn:disabled{opacity:0.35;cursor:not-allowed}
+.db-gold{background:linear-gradient(90deg,#92400e,#d97706);color:#fef3c7}
+.db-xp{background:linear-gradient(90deg,#1e3a8a,#2563eb);color:#dbeafe}
+.db-soul{background:linear-gradient(90deg,#1a0a2e,#4c1d95);color:#e9d5ff}
+.db-item{background:linear-gradient(90deg,#064e3b,#065f46);color:#d1fae5}
+.db-dark{background:linear-gradient(90deg,#18181b,#3f3f46);color:#d4d4d8}
+.dungeon-bar-wrap{background:#2a2a3d;border-radius:4px;height:7px;overflow:hidden;margin:6px 0}
+.dungeon-bar{height:100%;border-radius:4px;transition:width 0.3s}
+.db-bar-gold{background:linear-gradient(90deg,#d97706,#fbbf24)}
+.db-bar-xp{background:linear-gradient(90deg,#2563eb,#60a5fa)}
+.db-bar-soul{background:linear-gradient(90deg,#7c3aed,#c084fc)}
+.db-bar-item{background:linear-gradient(90deg,#059669,#34d399)}
+/* SKILL TREE */
+.skill-tree{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.sk-node{background:#12121f;border:1px solid #2a2a3d;border-radius:9px;padding:9px 10px;cursor:pointer;transition:all 0.15s;text-align:center}
+.sk-node:hover{border-color:#7c3aed}.sk-node.owned{background:#1e0a3c;border-color:#7c3aed}.sk-node.locked{opacity:0.3;cursor:not-allowed}
+.sk-icon{font-size:22px;margin-bottom:3px}.sk-name{font-size:11px;font-weight:600}.sk-desc{font-size:10px;color:#6b7280;margin-top:2px}.sk-cost{font-size:10px;color:#a78bfa;margin-top:3px}
+.sk-pts{display:flex;justify-content:space-between;align-items:center;padding:8px 0;margin-bottom:8px;border-bottom:1px solid #2a2a3d}
+/* ACHIEVEMENTS / DAILY */
+.ach-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#12121f;border:1px solid #2a2a3d;border-radius:9px;margin-bottom:5px}
+.ach-item.done{border-color:#15803d;background:#052e16}
+.ach-icon{font-size:22px;width:32px;text-align:center}
+.ach-info{flex:1}.ach-name{font-size:12px;font-weight:600}.ach-desc{font-size:10px;color:#6b7280;margin-top:1px}.ach-reward{font-size:10px;color:#f9d71c;margin-top:1px}
+.ach-prog-bar{background:#2a2a3d;border-radius:3px;height:4px;overflow:hidden;margin-top:3px}
+.ach-prog-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#c084fc);transition:width 0.3s}
+.daily-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#12121f;border:1px solid #2a2a3d;border-radius:9px;margin-bottom:5px}
+.daily-item.done{border-color:#15803d;background:#052e16}
+.claim-btn{padding:5px 10px;border-radius:6px;border:none;background:#7c3aed;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+/* OFFLINE POPUP */
+.popup-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.88);z-index:1000;align-items:center;justify-content:center}
+.popup-overlay.show{display:flex}
+.popup-box{background:#12121f;border:1px solid #7c3aed;border-radius:16px;padding:22px;max-width:300px;width:90%;text-align:center}
+.popup-title{font-size:17px;font-weight:700;color:#c084fc;margin-bottom:6px}
+.popup-btn{width:100%;padding:11px;border-radius:10px;border:none;background:linear-gradient(90deg,#7c3aed,#c084fc);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:14px}
+/* MISC */
+.dss-row{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:#1a0a2e;border-radius:8px;margin-bottom:6px;border:1px solid #4c1d95}
+.log{height:80px;overflow-y:auto;font-size:11px;color:#6b7280;line-height:1.8}
+.lg{color:#4ade80}.lb{color:#f87171}.ll{color:#c084fc;font-weight:600}.lo{color:#f59e0b;font-weight:600}.li{color:#60a5fa}.lp{color:#f87171;font-weight:600}
+.dmg-pop{position:fixed;pointer-events:none;font-weight:700;font-size:14px;animation:fup 0.9s ease forwards;z-index:999}
+@keyframes fup{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
+.badge{font-size:10px;padding:2px 7px;border-radius:5px;background:#1e0a3c;color:#c084fc}
+.prestige-btn{width:100%;margin-top:7px;padding:10px;border-radius:8px;border:1px solid #7c3aed;background:#1e0a3c;color:#c084fc;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600}
+.prestige-btn:disabled{opacity:0.35;cursor:not-allowed}
+.section-label{font-size:11px;color:#6b7280;font-weight:500;margin-bottom:5px;margin-top:6px}
+.mat-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.mat-chip{background:#1e1e30;border:1px solid #2a2a3d;border-radius:6px;padding:4px 9px;font-size:11px}
+/* MULTI ENEMY */
+.enemy-row{display:flex;gap:8px;justify-content:center;align-items:flex-end;flex-wrap:wrap;padding:4px 0 8px}
+.enemy-card{flex:1;min-width:80px;max-width:140px;text-align:center;background:#1a1a2e;border:1px solid #2a2a3d;border-radius:10px;padding:6px 4px;transition:all 0.15s}
+.enemy-card.active{border-color:#7c3aed;background:#1e0a3c}
+.enemy-card.dead{opacity:0.3}
+.enemy-card-emoji{font-size:32px;display:block;transition:transform 0.08s}
+.enemy-card-emoji.hit{transform:scale(1.2)}
+.enemy-card-name{font-size:10px;font-weight:600;margin-bottom:3px}
+.enemy-card-bar{background:#2a2a3d;border-radius:3px;height:5px;overflow:hidden;margin:0 4px}
+.enemy-card-fill{height:100%;border-radius:3px;transition:width 0.3s}
+/* SET BONUS */
+.set-bonus-active{background:#052e16;border:1px solid #15803d;border-radius:8px;padding:6px 10px;margin-bottom:5px;font-size:11px}
+.set-bonus-inactive{background:#12121f;border:1px solid #2a2a3d;border-radius:8px;padding:6px 10px;margin-bottom:5px;font-size:11px;opacity:0.5}
+.set-name{font-weight:600;margin-bottom:2px}
+.set-desc{font-size:10px;color:#6b7280}
+.set-prog{font-size:10px;color:#4ade80;margin-top:2px}
+/* JUICE */
+@keyframes screenShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@keyframes goldRain{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(0.5)}}
+@keyframes lvlUp{0%{opacity:0;transform:scale(0.5)}50%{opacity:1;transform:scale(1.2)}100%{opacity:0;transform:scale(1.5) translateY(-40px)}}
+@keyframes critFlash{0%,100%{background:#080810}50%{background:#1a0a00}}
+@keyframes enemyDie{0%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.3)}100%{opacity:0;transform:scale(0)}}
+.shake{animation:screenShake 0.2s ease}
+.crit-flash{animation:critFlash 0.15s ease}
+.gold-particle{position:fixed;pointer-events:none;font-size:13px;animation:goldRain 0.8s ease forwards;z-index:998}
+.lvl-popup{position:fixed;pointer-events:none;font-size:18px;font-weight:700;color:#f9d71c;animation:lvlUp 1.2s ease forwards;z-index:998;text-align:center;left:50%;transform:translateX(-50%)}
+/* TOWER MODE */
+.tower-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#080810;z-index:500;overflow-y:auto;padding:12px}
+.tower-overlay.show{display:block;animation:slideIn 0.3s ease}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.tower-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.tower-title{font-size:18px;font-weight:700;color:#c084fc}
+.tower-back{background:#1e0a3c;border:1px solid #7c3aed;color:#c084fc;border-radius:8px;padding:6px 14px;cursor:pointer;font-family:inherit;font-size:12px}
+.tower-floor{text-align:center;margin-bottom:8px}
+.tower-floor-num{font-size:32px;font-weight:700;color:#f9d71c}
+.tower-floor-label{font-size:11px;color:#6b7280}
+.tower-best{font-size:11px;color:#4ade80;margin-top:2px}
+.tower-enemy-area{background:#12121f;border:1px solid #2a2a3d;border-radius:12px;padding:12px;margin-bottom:8px;text-align:center}
+.tower-enemy-emoji{font-size:50px;display:block;margin-bottom:4px;transition:transform 0.08s}
+.tower-enemy-emoji.hit{transform:scale(1.2)}
+.tower-enemy-name{font-size:14px;font-weight:600;margin-bottom:8px}
+.tower-stats{background:#12121f;border:1px solid #2a2a3d;border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.tower-reward-preview{background:#1a1a2e;border:1px solid #2a2a3d;border-radius:10px;padding:8px 12px;margin-bottom:8px;font-size:11px;color:#6b7280}
+.tower-reward-preview strong{color:#f9d71c}
+.floor-type-badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:6px;margin-bottom:6px;font-weight:700}
+.ftb-normal{background:#1e1e30;color:#9ca3af}
+.ftb-elite{background:#4c1d95;color:#e9d5ff}
+.ftb-boss{background:#1e3a8a;color:#bfdbfe}
+.ftb-hell{background:#7f1d1d;color:#fca5a5;animation:blink 0.8s infinite}
+
+/* DUNGEON SCREEN */
+.dungeon-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#080810;z-index:500;padding:12px;overflow-y:auto}
+.dungeon-overlay.show{display:block;animation:dungeonEnter 0.4s ease}
+@keyframes dungeonEnter{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+.dungeon-screen-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.dungeon-screen-title{font-size:18px;font-weight:700}
+.dungeon-close-btn{background:#1e1e30;border:1px solid #2a2a3d;color:#9ca3af;border-radius:8px;padding:6px 14px;cursor:pointer;font-family:inherit;font-size:12px}
+.dungeon-scene{border-radius:14px;padding:16px;margin-bottom:10px;text-align:center;position:relative;overflow:hidden}
+.dungeon-scene::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;opacity:0.08;background:radial-gradient(circle,#fff 0%,transparent 70%)}
+.ds-gold{background:linear-gradient(135deg,#1c0f00,#3d2000);border:1px solid #92400e}
+.ds-xp{background:linear-gradient(135deg,#00051c,#001a3d);border:1px solid #1e3a8a}
+.ds-soul{background:linear-gradient(135deg,#0a0015,#1a003d);border:1px solid #4c1d95}
+.ds-item{background:linear-gradient(135deg,#001c0f,#003d20);border:1px solid #065f46}
+.dungeon-scene-icon{font-size:52px;margin-bottom:8px;display:block;animation:float 2s ease infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.dungeon-scene-name{font-size:16px;font-weight:700;margin-bottom:4px}
+.dungeon-scene-desc{font-size:12px;color:#9ca3af;margin-bottom:12px}
+.dungeon-progress-wrap{background:rgba(0,0,0,0.4);border-radius:6px;height:12px;overflow:hidden;margin-bottom:8px}
+.dungeon-progress-fill{height:100%;border-radius:6px;transition:width 0.5s}
+.dungeon-progress-txt{font-size:11px;color:#6b7280;margin-bottom:10px}
+.dungeon-monsters{display:flex;justify-content:center;gap:10px;margin:10px 0;font-size:28px}
+.dungeon-monster{animation:dungWalk 0.6s ease infinite alternate}
+@keyframes dungWalk{from{transform:translateY(0)}to{transform:translateY(-6px)}}
+.dungeon-reward-box{background:rgba(0,0,0,0.3);border-radius:10px;padding:10px;margin-top:8px;font-size:13px}
+.dungeon-entry-info{background:#12121f;border:1px solid #2a2a3d;border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.dungeon-entry-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.dungeon-action-btns{display:flex;gap:8px;margin-top:10px}
+.dungeon-action-btns button{flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- OFFLINE POPUP -->
+<div class="popup-overlay" id="offline-popup">
+  <div class="popup-box">
+    <div class="popup-title">⏰ Hoş Geldin!</div>
+    <div style="font-size:12px;color:#6b7280" id="offline-time-txt"></div>
+    <div style="margin:12px 0;font-size:14px;line-height:2" id="offline-rewards-txt"></div>
+    <button class="popup-btn" onclick="closePopup('offline-popup')">Ödülleri Al! 🎉</button>
+  </div>
+</div>
+
+<!-- ITEM DROP POPUP -->
+<div class="popup-overlay" id="item-popup">
+  <div class="popup-box">
+    <div class="popup-title">🎁 Zindan Ödülü!</div>
+    <div style="margin:12px 0;font-size:13px;line-height:2" id="item-popup-txt"></div>
+    <button class="popup-btn" onclick="closePopup('item-popup')">Harika! ✨</button>
+  </div>
+</div>
+
+<!-- TOWER MODE OVERLAY -->
+<div class="tower-overlay" id="tower-overlay">
+  <div class="tower-header">
+    <div class="tower-title">🏰 Sonsuz Kule</div>
+    <button class="tower-back" onclick="closeTower()">← Geri Dön</button>
+  </div>
+  <div class="tower-floor">
+    <div class="tower-floor-num">Kat <span id="tower-floor-num">1</span></div>
+    <div class="tower-floor-label" id="tower-floor-label">Normal Kat</div>
+    <div class="tower-best">🏆 En yüksek: <span id="tower-best-num">0</span></div>
+  </div>
+  <div class="tower-enemy-area">
+    <div id="tower-boss-lbl" style="margin-bottom:4px"></div>
+    <span class="tower-enemy-emoji" id="tower-enemy-emoji">👹</span>
+    <div class="tower-enemy-name" id="tower-enemy-name">Goblin</div>
+    <div class="bar-row" style="justify-content:center;margin-bottom:4px">
+      <div class="bar-wrap" style="max-width:200px"><div class="bar bar-ehp" id="tower-enemy-hp-bar" style="width:100%"></div></div>
+      <div class="bar-txt" id="tower-enemy-hp-txt">100/100</div>
+    </div>
+  </div>
+  <div class="tower-stats card">
+    <div class="card-title">⚔️ Kahraman</div>
+    <div class="bar-row">
+      <div class="bar-label">HP</div>
+      <div class="bar-wrap"><div class="bar bar-hp" id="tower-hero-hp-bar" style="width:100%"></div></div>
+      <div class="bar-txt" id="tower-hero-hp-txt">100/100</div>
+    </div>
+    <div class="hero-stats" style="margin-top:6px">
+      <div>⚔️<span id="tower-hero-dmg">5</span></div>
+      <div>🛡️<span id="tower-hero-arm">2</span></div>
+      <div>⚡<span id="tower-hero-spd">1.5</span>s</div>
+    </div>
+  </div>
+  <div class="tower-reward-preview">
+    🎁 Bu kat ödülü: <strong id="tower-reward-preview">—</strong>
+  </div>
+  <div class="card">
+    <div class="log" id="tower-log"></div>
+  </div>
+</div>
+
+<!-- DUNGEON SCREEN OVERLAY -->
+<div class="dungeon-overlay" id="dungeon-overlay">
+  <div class="dungeon-screen-header">
+    <div class="dungeon-screen-title" id="ds-title">🪙 Altın Zindanı</div>
+    <button class="dungeon-close-btn" onclick="closeDungeonScreen()">✕ Kapat</button>
+  </div>
+  <div class="dungeon-scene" id="ds-scene">
+    <span class="dungeon-scene-icon" id="ds-icon">🪙</span>
+    <div class="dungeon-scene-name" id="ds-name">Altın Zindanı</div>
+    <div class="dungeon-scene-desc" id="ds-desc">Altın yığınları arasında savaş!</div>
+    <div class="dungeon-monsters" id="ds-monsters"></div>
+    <div class="dungeon-progress-wrap">
+      <div class="dungeon-progress-fill" id="ds-progress" style="width:0%"></div>
+    </div>
+    <div class="dungeon-progress-txt" id="ds-progress-txt">Hazırlanıyor...</div>
+    <div class="dungeon-reward-box" id="ds-reward-box"></div>
+  </div>
+  <div class="dungeon-entry-info" id="ds-entry-info"></div>
+  <div class="dungeon-action-btns" id="ds-action-btns"></div>
+</div>
+
+<h1>🐉 Ejderha Hanı</h1>
+
+<!-- STAGE -->
+<div class="stage-banner">
+  <div class="stage-num" id="stage-num">Aşama 1</div>
+  <div class="stage-type" id="stage-type-txt">⚔️ Normal Bölge</div>
+  <div class="stage-progress">
+    <span style="font-size:10px;color:#6b7280" id="kill-prog">0/10</span>
+    <div class="stage-bar-wrap"><div class="stage-bar" id="stage-bar" style="width:0%"></div></div>
+    <span style="font-size:10px;color:#6b7280">sonraki</span>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="col4">
+  <div class="stat-card"><div class="stat-label">💰 Altın</div><div class="stat-val" id="gold-val">0</div></div>
+  <div class="stat-card"><div class="stat-label">🌒 Kara Ruh</div><div class="stat-val" id="dss-val">0</div></div>
+  <div class="stat-card"><div class="stat-label">🔩 Demir Tozu</div><div class="stat-val" id="dust-val">0</div></div>
+  <div class="stat-card"><div class="stat-label">💠 Rün Taşı</div><div class="stat-val" id="rune-val">0</div></div>
+</div>
+<div class="col3">
+  <div class="stat-card"><div class="stat-label">⚔️ Öldürülen</div><div class="stat-val" id="kills-val">0</div></div>
+  <div class="stat-card"><div class="stat-label">🏆 Aşama</div><div class="stat-val" id="stage-val">1</div></div>
+  <div class="stat-card"><div class="stat-label">✨ Prestij</div><div class="stat-val" id="prestige-val">0</div></div>
+</div>
+
+<!-- HERO -->
+<div class="card">
+  <div class="card-title">
+    <span>🧙 Kahraman <span style="font-size:10px;color:#6b7280">Lv.<span id="hero-lvl">1</span></span></span>
+    <span style="display:flex;gap:5px;align-items:center">
+      <span style="font-size:10px;color:#a78bfa">🔮<span id="skill-pts">0</span></span>
+      <span class="badge" id="prestige-badge">⚔️ Sıradan</span>
+    </span>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">HP</div>
+    <div class="bar-wrap"><div class="bar bar-hp" id="hero-hp-bar" style="width:100%"></div></div>
+    <div class="bar-txt" id="hero-hp-txt">100/100</div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">XP</div>
+    <div class="bar-wrap"><div class="bar bar-xp" id="hero-xp-bar" style="width:0%"></div></div>
+    <div class="bar-txt" id="hero-xp-txt">0/50</div>
+  </div>
+  <div class="hero-stats">
+    <div>⚔️<span id="hero-dmg">5</span></div>
+    <div>🛡️<span id="hero-arm">2</span></div>
+    <div>⚡<span id="hero-spd">1.5</span>s</div>
+  </div>
+</div>
+
+<!-- ENEMY -->
+<div class="card">
+  <div id="boss-lbl" style="text-align:center"></div>
+  <div class="enemy-row" id="enemy-row"></div>
+</div>
+
+<!-- TABS -->
+<div style="display:flex;gap:6px;margin-bottom:8px">
+  <button onclick="openTower()" style="flex:1;padding:9px;border-radius:9px;border:1px solid #7c3aed;background:linear-gradient(135deg,#1e0a3c,#2e1065);color:#c084fc;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700">🏰 Sonsuz Kule</button>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="showTab('dungeon')">⚔️ Zindan</button>
+  <button class="tab" onclick="showTab('equip')" id="tb-equip">🗡️ Ekipman</button>
+  <button class="tab" onclick="showTab('upgrades')">🔧 Geliştir</button>
+  <button class="tab" onclick="showTab('skilltree')">🔮 Skill</button>
+  <button class="tab" onclick="showTab('daily')" id="tb-daily">📋 Görev</button>
+  <button class="tab" onclick="showTab('achiev')">🏆 Başarım</button>
+  <button class="tab" onclick="showTab('log')">📜 Kayıt</button>
+</div>
+
+<div id="tab-dungeon" class="panel show"><div id="dungeon-content"></div></div>
+<div id="tab-equip" class="panel">
+  <div class="section-label">⚙️ Kuşanılan Ekipman</div>
+  <div id="unlock-banner" style="display:none;background:#052e16;border:1px solid #15803d;border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:11px;color:#4ade80"></div>
+<div class="equip-grid" id="equip-slots"></div>
+  <div class="section-label">🎒 Rün Envanteri</div>
+  <div class="rune-grid" id="rune-inventory"></div>
+  <div class="section-label">🛒 Ekipman Dükkanı</div>
+  <div id="shop-list"></div>
+</div>
+<div id="tab-upgrades" class="panel"><div id="upgrade-list"></div></div>
+<div id="tab-skilltree" class="panel">
+  <div class="sk-pts"><span style="font-size:12px">🔮 Skill Puanı: <strong id="skill-pts-big">0</strong></span><span style="font-size:10px;color:#6b7280">Her seviyede +1</span></div>
+  <div class="skill-tree" id="skill-tree-list"></div>
+</div>
+<div id="tab-daily" class="panel"><div id="daily-content"></div></div>
+<div id="tab-achiev" class="panel"><div id="achiev-list"></div></div>
+<div id="tab-log" class="panel"><div class="card"><div class="log" id="battle-log"></div></div></div>
+
+<script>
+// ===== ENEMY DATA =====
+// Aşama 1-20: Başlangıç | 21-50: Orta | 51-100: Zor | 100+: Efsane
+const NORMALS=[
+  // Aşama 1-10
+  {name:'Çaylak Goblin',emoji:'👹',hp:40,dmg:5,xp:10,gold:8,minStage:1},
+  {name:'Kobold',emoji:'🦎',hp:70,dmg:9,xp:16,gold:14,minStage:1},
+  // Aşama 11-20
+  {name:'Ork Asker',emoji:'🧟',hp:200,dmg:22,xp:35,gold:30,minStage:11},
+  {name:'Çöl Akrebi',emoji:'🦂',hp:320,dmg:35,xp:50,gold:45,minStage:11},
+  // Aşama 21-35
+  {name:'Troll Bekçi',emoji:'👾',hp:700,dmg:65,xp:90,gold:80,minStage:21},
+  {name:'Kemik Savaşçı',emoji:'💀',hp:1100,dmg:95,xp:130,gold:115,minStage:21},
+  // Aşama 36-50
+  {name:'Vampir Lordu',emoji:'🧛',hp:2500,dmg:160,xp:200,gold:180,minStage:36},
+  {name:'Karanfil Büyücü',emoji:'🧙',hp:3800,dmg:230,xp:280,gold:250,minStage:36},
+  // Aşama 51-70
+  {name:'Cehennem İblisi',emoji:'😈',hp:8000,dmg:380,xp:450,gold:400,minStage:51},
+  {name:'Lich Çırağı',emoji:'☠️',hp:13000,dmg:550,xp:650,gold:580,minStage:51},
+  // Aşama 71-90
+  {name:'Ejderha Askeri',emoji:'🐉',hp:28000,dmg:900,xp:1000,gold:900,minStage:71},
+  {name:'Kaos Muhafızı',emoji:'🌀',hp:45000,dmg:1300,xp:1400,gold:1250,minStage:71},
+  // Aşama 91-120
+  {name:'Karanlık Dev',emoji:'🗿',hp:100000,dmg:2200,xp:2500,gold:2200,minStage:91},
+  {name:'Boşluk Yaratığı',emoji:'🕳️',hp:170000,dmg:3200,xp:3500,gold:3100,minStage:91},
+  // Aşama 121+
+  {name:'Tanrı Askeri',emoji:'⚡',hp:400000,dmg:6500,xp:7000,gold:6500,minStage:121},
+  {name:'Ölüm Meleği',emoji:'🌑',hp:700000,dmg:10000,xp:11000,gold:10000,minStage:121},
+];
+
+const ELITES=[
+  {name:'Elite Goblin Katil',emoji:'🗡️',hp:300,dmg:40,xp:80,gold:120,minStage:1},
+  {name:'Elite Ork Savaşçı',emoji:'⚔️',hp:900,dmg:90,xp:180,gold:260,minStage:11},
+  {name:'Elite Troll Lordu',emoji:'🪨',hp:2500,dmg:180,xp:380,gold:520,minStage:21},
+  {name:'Elite Vampir Beyi',emoji:'🦇',hp:7000,dmg:350,xp:750,gold:1000,minStage:36},
+  {name:'Elite İblis',emoji:'👿',hp:20000,dmg:700,xp:1500,gold:2000,minStage:51},
+  {name:'Elite Ejderha',emoji:'🔥',hp:60000,dmg:1500,xp:3500,gold:4500,minStage:71},
+  {name:'Elite Kaos Lordu',emoji:'🌑',hp:180000,dmg:3500,xp:8000,gold:10000,minStage:91},
+  {name:'Elite Tanrı',emoji:'⚡',hp:600000,dmg:9000,xp:20000,gold:25000,minStage:121},
+];
+
+const BOSSES=[
+  {name:'Goblin Kral',emoji:'👑',hp:800,dmg:60,xp:200,gold:400,minStage:1},
+  {name:'Ork Şaman',emoji:'🧿',hp:2500,dmg:140,xp:500,gold:900,minStage:11},
+  {name:'Troll Tanrısı',emoji:'🏔️',hp:8000,dmg:300,xp:1200,gold:2000,minStage:21},
+  {name:'Kan Prensi',emoji:'🩸',hp:25000,dmg:650,xp:3000,gold:5000,minStage:36},
+  {name:'Ölümsüz Kral',emoji:'💀',hp:80000,dmg:1500,xp:8000,gold:12000,minStage:51},
+  {name:'Ejderha Lordu',emoji:'🐲',hp:250000,dmg:4000,xp:20000,gold:35000,minStage:71},
+  {name:'Kaos Prensi',emoji:'🌌',hp:800000,dmg:10000,xp:55000,gold:90000,minStage:91},
+  {name:'Tanrı Katili',emoji:'🌟',hp:3000000,dmg:30000,xp:180000,gold:300000,minStage:121},
+];
+
+const HELL_BOSSES=[
+  {name:'☠️ KARANLIK TANRI',emoji:'🌑',hp:2000000,dmg:50000,xp:500000,gold:800000,minStage:50},
+  {name:'☠️ ÖLÜM İMPARATORU',emoji:'⚰️',hp:15000000,dmg:200000,xp:2000000,gold:3000000,minStage:100},
+  {name:'☠️ KAOS EFENDİSİ',emoji:'🌀',hp:100000000,dmg:800000,xp:10000000,gold:15000000,minStage:150},
+];
+
+// ===== RUNES =====
+const RUNE_TYPES=[
+  {id:'fire',name:'Ateş Rünü',emoji:'🔥',desc:'Hasar +12%',slot:'weapon',apply:(it)=>{it.runeBonus=(it.runeBonus||0)+Math.round(it.dmg*0.12)}},
+  {id:'ice',name:'Buz Rünü',emoji:'❄️',desc:'Zırh +12%',slot:'armor',apply:(it)=>{it.runeBonus=(it.runeBonus||0)+Math.round(it.arm*0.12)}},
+  {id:'thunder',name:'Yıldırım Rünü',emoji:'⚡',desc:'Hız +10%',slot:'ring',apply:()=>{G.hero.spd=Math.round(G.hero.spd*0.9)}},
+  {id:'chaos',name:'Kaos Rünü',emoji:'🌀',desc:'Tüm stat +8%',slot:'any',apply:(it)=>{it.runeBonus=(it.runeBonus||0)+Math.round(((it.dmg||0)+(it.arm||0))*0.08)}},
+];
+
+// ===== BASE ITEMS =====
+// ===== TİER SİSTEMİ =====
+// T1: Başlangıç | T2: Demir | T3: Gümüş | T4: Ejderha | T5: Efsane | T6: Kaos | T7: Tanrısal
+const BASE_WEAPONS=[
+  // T1 - Başlangıç
+  {name:'Tahta Kılıç',emoji:'🪵',slot:'weapon',rarity:'normal',tier:1,dmg:5,arm:0,cost:30},
+  {name:'Taş Bıçak',emoji:'🗿',slot:'weapon',rarity:'normal',tier:1,dmg:9,arm:0,cost:60},
+  // T2 - Demir
+  {name:'Demir Kılıç',emoji:'🗡️',slot:'weapon',rarity:'normal',tier:2,dmg:16,arm:0,cost:150},
+  {name:'Demir Balta',emoji:'⚔️',slot:'weapon',rarity:'normal',tier:2,dmg:22,arm:0,cost:250},
+  // T3 - Gümüş
+  {name:'Gümüş Kılıç',emoji:'🔵',slot:'weapon',rarity:'rare',tier:3,dmg:38,arm:0,cost:600},
+  {name:'Mithril Mızrak',emoji:'💙',slot:'weapon',rarity:'rare',tier:3,dmg:55,arm:0,cost:900},
+  // T4 - Ejderha
+  {name:'Ejder Kılıcı',emoji:'🐲',slot:'weapon',rarity:'epic',tier:4,dmg:90,arm:5,cost:2500},
+  {name:'Karanlık Kılıç',emoji:'🌑',slot:'weapon',rarity:'epic',tier:4,dmg:130,arm:8,cost:4000},
+  // T5 - Efsane
+  {name:'Efsane Kılıç',emoji:'✨',slot:'weapon',rarity:'legendary',tier:5,dmg:200,arm:15,cost:10000},
+  {name:'Şeytan Kılıcı',emoji:'😈',slot:'weapon',rarity:'legendary',tier:5,dmg:280,arm:20,cost:18000},
+  // T6 - Kaos
+  {name:'Kaos Bıçağı',emoji:'🌀',slot:'weapon',rarity:'chaos',tier:6,dmg:420,arm:30,cost:50000},
+  {name:'Boşluk Kılıcı',emoji:'🕳️',slot:'weapon',rarity:'chaos',tier:6,dmg:580,arm:40,cost:90000},
+  // T7 - Tanrısal
+  {name:'Tanrı Kılıcı',emoji:'⚡',slot:'weapon',rarity:'legendary',tier:7,dmg:900,arm:60,cost:300000},
+  {name:'Ölüm Tırpanı',emoji:'☠️',slot:'weapon',rarity:'chaos',tier:7,dmg:1400,arm:80,cost:600000},
+];
+const BASE_ARMORS=[
+  // T1
+  {name:'Deri Zırh',emoji:'🥋',slot:'armor',rarity:'normal',tier:1,dmg:0,arm:5,cost:30},
+  {name:'Kumaş Zırh',emoji:'👕',slot:'armor',rarity:'normal',tier:1,dmg:0,arm:8,cost:60},
+  // T2
+  {name:'Zincir Zırh',emoji:'🛡️',slot:'armor',rarity:'normal',tier:2,dmg:0,arm:18,cost:150},
+  {name:'Demir Plaka',emoji:'🔩',slot:'armor',rarity:'normal',tier:2,dmg:0,arm:26,cost:250},
+  // T3
+  {name:'Gümüş Zırh',emoji:'💿',slot:'armor',rarity:'rare',tier:3,dmg:0,arm:45,cost:600},
+  {name:'Mithril Zırh',emoji:'🔷',slot:'armor',rarity:'rare',tier:3,dmg:0,arm:65,cost:900},
+  // T4
+  {name:'Ejder Zırhı',emoji:'🦕',slot:'armor',rarity:'epic',tier:4,dmg:5,arm:100,cost:2500},
+  {name:'Karanlık Zırh',emoji:'🖤',slot:'armor',rarity:'epic',tier:4,dmg:8,arm:140,cost:4000},
+  // T5
+  {name:'Efsane Zırh',emoji:'🌟',slot:'armor',rarity:'legendary',tier:5,dmg:15,arm:220,cost:10000},
+  {name:'Kutsal Zırh',emoji:'✝️',slot:'armor',rarity:'legendary',tier:5,dmg:20,arm:300,cost:18000},
+  // T6
+  {name:'Kaos Zırhı',emoji:'🌌',slot:'armor',rarity:'chaos',tier:6,dmg:30,arm:450,cost:50000},
+  {name:'Boşluk Zırhı',emoji:'🕳️',slot:'armor',rarity:'chaos',tier:6,dmg:40,arm:620,cost:90000},
+  // T7
+  {name:'Tanrı Zırhı',emoji:'🏛️',slot:'armor',rarity:'legendary',tier:7,dmg:60,arm:1000,cost:300000},
+  {name:'Ölüm Zırhı',emoji:'💀',slot:'armor',rarity:'chaos',tier:7,dmg:80,arm:1600,cost:600000},
+];
+const BASE_RINGS=[
+  // T1
+  {name:'Bakır Yüzük',emoji:'🔶',slot:'ring',rarity:'normal',tier:1,dmg:2,arm:2,cost:40},
+  {name:'Tunç Yüzük',emoji:'🟤',slot:'ring',rarity:'normal',tier:1,dmg:4,arm:4,cost:80},
+  // T2
+  {name:'Demir Yüzük',emoji:'⭕',slot:'ring',rarity:'normal',tier:2,dmg:8,arm:8,cost:200},
+  {name:'Gümüş Yüzük',emoji:'⚪',slot:'ring',rarity:'rare',tier:3,dmg:16,arm:16,cost:500},
+  // T3-4
+  {name:'Ejder Yüzüğü',emoji:'💍',slot:'ring',rarity:'epic',tier:4,dmg:35,arm:35,cost:2200},
+  {name:'Karanlık Yüzük',emoji:'🖤',slot:'ring',rarity:'epic',tier:4,dmg:55,arm:55,cost:4500},
+  // T5
+  {name:'Efsane Yüzük',emoji:'👑',slot:'ring',rarity:'legendary',tier:5,dmg:90,arm:90,cost:12000},
+  {name:'Kutsal Yüzük',emoji:'✨',slot:'ring',rarity:'legendary',tier:5,dmg:130,arm:130,cost:22000},
+  // T6-7
+  {name:'Kaos Yüzüğü',emoji:'🌀',slot:'ring',rarity:'chaos',tier:6,dmg:200,arm:200,cost:60000},
+  {name:'Tanrı Yüzüğü',emoji:'💫',slot:'ring',rarity:'chaos',tier:7,dmg:380,arm:380,cost:350000},
+];
+const BASE_HELMETS=[
+  // T1
+  {name:'Deri Miğfer',emoji:'⛑️',slot:'helmet',rarity:'normal',tier:1,dmg:0,arm:4,cost:35},
+  {name:'Tahta Tolga',emoji:'🪖',slot:'helmet',rarity:'normal',tier:1,dmg:0,arm:7,cost:70},
+  // T2
+  {name:'Demir Miğfer',emoji:'⚙️',slot:'helmet',rarity:'normal',tier:2,dmg:0,arm:15,cost:180},
+  {name:'Zincir Başlık',emoji:'🔗',slot:'helmet',rarity:'rare',tier:3,dmg:0,arm:32,cost:550},
+  // T3-4
+  {name:'Ejder Miğfer',emoji:'🐉',slot:'helmet',rarity:'epic',tier:4,dmg:8,arm:55,cost:2400},
+  {name:'Karanlık Başlık',emoji:'🌑',slot:'helmet',rarity:'epic',tier:4,dmg:12,arm:80,cost:4200},
+  // T5
+  {name:'Efsane Miğfer',emoji:'💎',slot:'helmet',rarity:'legendary',tier:5,dmg:18,arm:130,cost:11000},
+  {name:'Kutsal Taç',emoji:'👸',slot:'helmet',rarity:'legendary',tier:5,dmg:25,arm:180,cost:20000},
+  // T6-7
+  {name:'Kaos Miğfer',emoji:'🌌',slot:'helmet',rarity:'chaos',tier:6,dmg:40,arm:280,cost:55000},
+  {name:'Tanrı Tacı',emoji:'🌟',slot:'helmet',rarity:'chaos',tier:7,dmg:70,arm:550,cost:320000},
+];
+const ALL_SHOP_ITEMS=[...BASE_WEAPONS,...BASE_ARMORS,...BASE_RINGS,...BASE_HELMETS];
+
+const RARITY_ORDER=['normal','rare','epic','legendary','chaos'];
+const RARITY_NEXT={normal:'rare',rare:'epic',epic:'legendary',legendary:'chaos'};
+
+// ===== UPGRADES =====
+const UPGRADES=[
+  {name:'⚔️ Kılıç',desc:'Hasar +3',baseCost:20,owned:0,max:30,apply:()=>{G.hero.baseDmg+=3;recalc()}},
+  {name:'🛡️ Kalkan',desc:'Zırh +2',baseCost:15,owned:0,max:30,apply:()=>{G.hero.baseArm+=2;recalc()}},
+  {name:'👢 Çizmeler',desc:'Hız +0.2s',baseCost:30,owned:0,max:10,apply:()=>{G.hero.spd=Math.max(500,G.hero.spd-200)}},
+  {name:'🧪 Şifa iksiri',desc:'Max HP +40',baseCost:25,owned:0,max:30,apply:()=>{G.hero.maxHp+=40;G.hero.hp=G.hero.maxHp}},
+  {name:'🔮 Büyü taşı',desc:'Hasar +10',baseCost:80,owned:0,max:20,apply:()=>{G.hero.baseDmg+=10;recalc()}},
+  {name:'🐉 Ejderha kını',desc:'Zırh +6, Hasar +6',baseCost:150,owned:0,max:10,apply:()=>{G.hero.baseDmg+=6;G.hero.baseArm+=6;recalc()}},
+  {name:'💀 Ölüm tılsımı',desc:'Hasar +25',baseCost:400,owned:0,max:10,apply:()=>{G.hero.baseDmg+=25;recalc()}},
+  {name:'🌑 Kaos kristali',desc:'Zırh +20, Hasar +20',baseCost:800,owned:0,max:5,apply:()=>{G.hero.baseDmg+=20;G.hero.baseArm+=20;recalc()}},
+];
+
+// ===== SKILL NODES =====
+const SKILL_NODES=[
+  {id:'pow1',name:'Güç I',emoji:'⚔️',desc:'Hasar +15%',cost:1,owned:false,req:null,apply:()=>{G.sm.dmg*=1.15;recalc()}},
+  {id:'def1',name:'Zırh I',emoji:'🛡️',desc:'Zırh +15%',cost:1,owned:false,req:null,apply:()=>{G.sm.arm*=1.15;recalc()}},
+  {id:'vit1',name:'Dirilik I',emoji:'❤️',desc:'Max HP +20%',cost:1,owned:false,req:null,apply:()=>{G.hero.maxHp=Math.round(G.hero.maxHp*1.2);G.hero.hp=G.hero.maxHp}},
+  {id:'spd1',name:'Hız I',emoji:'⚡',desc:'Saldırı +15%',cost:1,owned:false,req:null,apply:()=>{G.hero.spd=Math.round(G.hero.spd*0.85)}},
+  {id:'pow2',name:'Güç II',emoji:'🗡️',desc:'Hasar +25%',cost:2,owned:false,req:'pow1',apply:()=>{G.sm.dmg*=1.25;recalc()}},
+  {id:'def2',name:'Zırh II',emoji:'🏰',desc:'Zırh +25%',cost:2,owned:false,req:'def1',apply:()=>{G.sm.arm*=1.25;recalc()}},
+  {id:'crit',name:'Kritik',emoji:'💥',desc:'Kritik +10%',cost:2,owned:false,req:'pow1',apply:()=>{G.sm.critChance+=0.10}},
+  {id:'regen',name:'Yenilenme',emoji:'💚',desc:'Pasif HP rejeni',cost:2,owned:false,req:'vit1',apply:()=>{G.sm.regen=true}},
+  {id:'berserk',name:'Berserk',emoji:'😡',desc:'HP<%50 hasar+30%',cost:3,owned:false,req:'pow2',apply:()=>{G.sm.berserk=true}},
+  {id:'iron',name:'Demir Deri',emoji:'🪨',desc:'Hasar %20 azalt',cost:3,owned:false,req:'def2',apply:()=>{G.sm.iron=true}},
+  {id:'vamp',name:'Kan Emme',emoji:'🩸',desc:'Hasarın %10 HP',cost:3,owned:false,req:'crit',apply:()=>{G.sm.vamp=true}},
+  {id:'pow3',name:'Güç III',emoji:'🌟',desc:'Hasar +50%',cost:4,owned:false,req:'berserk',apply:()=>{G.sm.dmg*=1.5;recalc()}},
+  {id:'god',name:'Tanrı Kalkanı',emoji:'🌑',desc:'Zırh+40% HP+40%',cost:5,owned:false,req:'iron',apply:()=>{G.sm.arm*=1.4;G.hero.maxHp=Math.round(G.hero.maxHp*1.4);G.hero.hp=G.hero.maxHp;recalc()}},
+  {id:'chaos',name:'Kaos Darbesi',emoji:'🌀',desc:'Her 8. vuruş 3x',cost:4,owned:false,req:'vamp',apply:()=>{G.sm.chaos=true}},
+];
+
+// ===== ACHIEVEMENTS =====
+const ACHIEVEMENTS=[
+  // Savaş
+  {id:'k50',name:'İlk Kan',emoji:'🗡️',desc:'50 düşman öldür',reward:'200g',rtype:'gold',rval:200,target:50,stat:'kills',done:false,claimed:false},
+  {id:'k250',name:'Kan Dökücü',emoji:'⚔️',desc:'250 düşman öldür',reward:'1500g',rtype:'gold',rval:1500,target:250,stat:'kills',done:false,claimed:false},
+  {id:'k1000',name:'Savaş Makinesi',emoji:'💀',desc:'1000 düşman öldür',reward:'8000g',rtype:'gold',rval:8000,target:1000,stat:'kills',done:false,claimed:false},
+  {id:'k5000',name:'Ölüm Tanrısı',emoji:'☠️',desc:'5000 düşman öldür',reward:'5 Kara Ruh',rtype:'soul',rval:5,target:5000,stat:'kills',done:false,claimed:false},
+  // Aşama
+  {id:'s10',name:'İlk Adım',emoji:'👣',desc:'Aşama 10',reward:'1000g',rtype:'gold',rval:1000,target:10,stat:'stage',done:false,claimed:false},
+  {id:'s25',name:'Cesur Kahraman',emoji:'🏆',desc:'Aşama 25',reward:'5000g',rtype:'gold',rval:5000,target:25,stat:'stage',done:false,claimed:false},
+  {id:'s50',name:'Savaş Lordu',emoji:'🌟',desc:'Aşama 50',reward:'15000g + 1 Kara Ruh',rtype:'both',rval:{gold:15000,soul:1},target:50,stat:'stage',done:false,claimed:false},
+  {id:'s100',name:'Efsane',emoji:'👑',desc:'Aşama 100',reward:'50000g + 3 Kara Ruh',rtype:'both',rval:{gold:50000,soul:3},target:100,stat:'stage',done:false,claimed:false},
+  {id:'s200',name:'Ölümsüz',emoji:'🌌',desc:'Aşama 200',reward:'5 Rün Taşı',rtype:'rune',rval:5,target:200,stat:'stage',done:false,claimed:false},
+  // Seviye
+  {id:'lv10',name:'Güçlenen',emoji:'💪',desc:'Seviye 10',reward:'2000g',rtype:'gold',rval:2000,target:10,stat:'lvl',done:false,claimed:false},
+  {id:'lv25',name:'Usta',emoji:'🔥',desc:'Seviye 25',reward:'10000g',rtype:'gold',rval:10000,target:25,stat:'lvl',done:false,claimed:false},
+  {id:'lv50',name:'Büyük Üstat',emoji:'⚡',desc:'Seviye 50',reward:'3 Kara Ruh',rtype:'soul',rval:3,target:50,stat:'lvl',done:false,claimed:false},
+  // Prestij
+  {id:'p1',name:'Yeniden Doğuş',emoji:'✨',desc:'İlk prestij',reward:'2 Kara Ruh',rtype:'soul',rval:2,target:1,stat:'prestige',done:false,claimed:false},
+  {id:'p3',name:'Sonsuz Döngü',emoji:'🔄',desc:'3. prestij',reward:'5 Kara Ruh + 3 Rün Taşı',rtype:'multi',rval:{soul:5,rune:3},target:3,stat:'prestige',done:false,claimed:false},
+  // Zindan
+  {id:'d5',name:'Zindan Kaşifi',emoji:'🗺️',desc:'5 zindan tamamla',reward:'2000g',rtype:'gold',rval:2000,target:5,stat:'dungDone',done:false,claimed:false},
+  {id:'d25',name:'Zindan Avcısı',emoji:'🏰',desc:'25 zindan tamamla',reward:'2 Rün Taşı',rtype:'rune',rval:2,target:25,stat:'dungDone',done:false,claimed:false},
+  // Ekipman
+  {id:'e1',name:'Demirci Çırağı',emoji:'🔨',desc:'İlk güçlendirme',reward:'10 Demir Tozu',rtype:'dust',rval:10,target:1,stat:'enhCount',done:false,claimed:false},
+  {id:'e20',name:'Usta Demirci',emoji:'⚒️',desc:'20 kez güçlendir',reward:'3 Kara Ruh',rtype:'soul',rval:3,target:20,stat:'enhCount',done:false,claimed:false},
+  {id:'ev1',name:'Evrimi Gör',emoji:'💥',desc:'İlk evrim',reward:'2 Rün Taşı',rtype:'rune',rval:2,target:1,stat:'evolCount',done:false,claimed:false},
+  {id:'ev5',name:'Dönüşüm Ustası',emoji:'🌀',desc:'5 evrim yap',reward:'10 Kara Ruh',rtype:'soul',rval:10,target:5,stat:'evolCount',done:false,claimed:false},
+  // Kule
+  {id:'t10',name:'Kule Kaşifi',emoji:'🏰',desc:'Kulede 10. kata ulaş',reward:'3000g',rtype:'gold',rval:3000,target:10,stat:'towerBest',done:false,claimed:false},
+  {id:'t50',name:'Kule Lordu',emoji:'🗼',desc:'Kulede 50. kata ulaş',reward:'3 Kara Ruh',rtype:'soul',rval:3,target:50,stat:'towerBest',done:false,claimed:false},
+  {id:'t100',name:'Sonsuz Savaşçı',emoji:'♾️',desc:'Kulede 100. kata ulaş',reward:'10 Kara Ruh + 5 Rün Taşı',rtype:'multi',rval:{soul:10,rune:5},target:100,stat:'towerBest',done:false,claimed:false},
+  // Gizli
+  {id:'h1',name:'🔒 Gizli',emoji:'❓',desc:'Gizemli bir başarım...',reward:'???',rtype:'soul',rval:5,target:7,stat:'loginStreak',done:false,claimed:false,hidden:true,revealDesc:'7 gün üst üste giriş yap'},
+];
+
+function makeDailyQuests(stage,lvl){
+  // stage ve lvl parametrelerle gelir, G kullanmaz
+  const s=stage||1;
+  const killT=Math.max(30,Math.min(300,s*3));
+  const goldT=Math.max(500,Math.min(50000,s*100));
+  const stageT=Math.max(3,Math.min(20,Math.floor(s/10)+3));
+  return [
+    {id:'d1',cat:'⚔️ Savaş',name:'Kan Dökücü',desc:killT+' düşman öldür',reward:Math.round(goldT*0.5)+'g',rtype:'gold',rval:Math.round(goldT*0.5),target:killT,stat:'kills',prog:0,done:false,claimed:false},
+    {id:'d2',cat:'⚔️ Savaş',name:'Elite Avcı',desc:'3 elite/boss öldür',reward:Math.round(goldT*0.8)+'g',rtype:'gold',rval:Math.round(goldT*0.8),target:3,stat:'eliteKills',prog:0,done:false,claimed:false},
+    {id:'d3',cat:'🏆 İlerleme',name:'Kaşif',desc:stageT+' aşama geç',reward:Math.round(goldT*0.4)+'g',rtype:'gold',rval:Math.round(goldT*0.4),target:stageT,stat:'stageAdv',prog:0,done:false,claimed:false},
+    {id:'d4',cat:'🏆 İlerleme',name:'Kule Tırmanıcı',desc:'Kulede 10 kat çık',reward:'2 Demir Tozu',rtype:'dust',rval:2,target:10,stat:'towerFloors',prog:0,done:false,claimed:false},
+    {id:'d5',cat:'🏰 Zindan',name:'Zindan Maceracı',desc:'2 zindan tamamla',reward:'1 Kara Ruh',rtype:'soul',rval:1,target:2,stat:'dung',prog:0,done:false,claimed:false},
+    {id:'d6',cat:'🏰 Zindan',name:'Hazine Avcısı',desc:'Item zindanını tamamla',reward:'1 Rün Taşı',rtype:'rune',rval:1,target:1,stat:'itemDung',prog:0,done:false,claimed:false},
+    {id:'d7',cat:'🗡️ Ekipman',name:'Demirci',desc:'3 kez güçlendir',reward:'5 Demir Tozu',rtype:'dust',rval:5,target:3,stat:'enh',prog:0,done:false,claimed:false},
+    {id:'d8',cat:'💰 Zenginlik',name:'Altin Avcisi',desc:goldT+' altin kazan',reward:'2 Kara Ruh',rtype:'soul',rval:2,target:goldT,stat:'goldEarned',prog:0,done:false,claimed:false},
+  ];
+}
+
+function makeWeeklyQuests(){
+  return [
+    {id:'w1',cat:'👑 Haftalık',name:'Büyük Savaşçı',desc:'500 düşman öldür',reward:'10 Kara Ruh',rtype:'soul',rval:10,target:500,stat:'kills',prog:0,done:false,claimed:false},
+    {id:'w2',cat:'👑 Haftalık',name:'Kule Lordu',desc:'Kulede 50. kata ulaş',reward:'20 Demir Tozu',rtype:'dust',rval:20,target:50,stat:'towerMax',prog:0,done:false,claimed:false},
+    {id:'w3',cat:'👑 Haftalık',name:'Zindan Ustası',desc:'10 zindan tamamla',reward:'3 Rün Taşı',rtype:'rune',rval:3,target:10,stat:'dung',prog:0,done:false,claimed:false},
+    {id:'w4',cat:'👑 Haftalık',name:'Prestij Adayı',desc:'100 aşama geç',reward:'50000g',rtype:'gold',rval:50000,target:100,stat:'stageAdv',prog:0,done:false,claimed:false},
+  ];
+}
+
+// ===== STATE =====
+function mkEquip(base){
+  return {...base,level:0,runeId:null,runeBonus:0};
+}
+
+let G={
+  gold:0,kills:0,prestige:0,darkSoul:0,ironDust:0,runestone:0,
+  stage:1,stageKills:0,totalGold:0,dungDone:0,enhCount:0,evolCount:0,
+  runeInventory:{fire:0,ice:0,thunder:0,chaos:0},
+  hero:{hp:100,maxHp:100,xp:0,xpNext:50,lvl:1,baseDmg:5,baseArm:2,dmg:5,arm:2,spd:1500},
+  skillPts:0,
+  sm:{dmg:1,arm:1,critChance:0.2,regen:false,berserk:false,iron:false,vamp:false,chaos:false},
+  equipped:{weapon:null,armor:null,ring:null,helmet:null,ring2:null,amulet:null},
+  enemy:null,logs:[],
+  heroTimer:0,enemyTimer:0,regenTimer:0,hitCount:0,
+  dungeon:{
+    gold:{entries:2,max:2,extraUsed:0,extraMax:3,running:false,timer:0,duration:180,reward:0},
+    xp:{entries:2,max:2,extraUsed:0,extraMax:3,running:false,timer:0,duration:180,reward:0},
+    soul:{entries:1,max:1,extraUsed:0,extraMax:2,running:false,timer:0,duration:300,reward:0},
+    item:{entries:1,max:1,extraUsed:0,extraMax:2,running:false,timer:0,duration:300,reward:0},
+    lastReset:new Date().toDateString(),
+  },
+  daily:{quests:makeDailyQuests(1,1),lastReset:new Date().toDateString(),
+    kills:0,eliteKills:0,stageAdv:0,towerFloors:0,dung:0,itemDung:0,enh:0,goldEarned:0},
+  weekly:{quests:makeWeeklyQuests(),lastReset:'',
+    kills:0,towerMax:0,dung:0,stageAdv:0},
+  login:{streak:0,lastLogin:'',todayClaimed:false,totalDays:0},
+  lastSave:Date.now(),
+};
+
+function recalc(){
+  let bd=0,ba=0;
+  Object.values(G.equipped).forEach(it=>{
+    if(!it)return;
+    const lvlMult=1+it.level*0.2;
+    bd+=Math.round((it.dmg||0)*lvlMult)+(it.runeBonus&&it.slot==='weapon'?it.runeBonus:0);
+    ba+=Math.round((it.arm||0)*lvlMult)+(it.runeBonus&&it.slot==='armor'?it.runeBonus:0);
+  });
+  G.hero.dmg=Math.round((G.hero.baseDmg+bd)*G.sm.dmg);
+  G.hero.arm=Math.round((G.hero.baseArm+ba)*G.sm.arm);
+}
+
+// ===== EQUIPMENT ACTIONS =====
+function enhanceEquip(slot){
+  const it=G.equipped[slot];
+  if(!it)return;
+  if(it.level>=10){addLog('⚠️ Ekipman zaten max seviye!','lb');return;}
+  const cost=5+it.level*8;
+  if(G.ironDust<cost){addLog('❌ Yeterli Demir Tozu yok! Gereken: '+cost,'lb');return;}
+  G.ironDust-=cost;
+  it.level++;
+  G.enhCount++;
+  G.daily.enh++;
+  updateDailyProg();checkAchievements();recalc();
+  addLog('🔨 '+it.name+' +'+it.level+' oldu! Stat +%20','lg');
+}
+
+function reforgeEquip(slot){
+  const it=G.equipped[slot];
+  if(!it)return;
+  const cost=1;
+  if(G.darkSoul<cost){addLog('❌ Kara Ruh yok!','lb');return;}
+  G.darkSoul-=cost;
+  const roll=Math.random();
+  if(roll<0.4){it.dmg=Math.round((it.dmg||0)*(1+Math.random()*0.3));addLog('⚡ Reforge! Hasar arttı!','lo');}
+  else if(roll<0.8){it.arm=Math.round((it.arm||0)*(1+Math.random()*0.3));addLog('⚡ Reforge! Zırh arttı!','lo');}
+  else{it.dmg=Math.round((it.dmg||0)*1.2);it.arm=Math.round((it.arm||0)*1.2);addLog('🌟 Harika Reforge! Her iki stat arttı!','ll');}
+  recalc();
+}
+
+function evolveEquip(slot){
+  const it=G.equipped[slot];
+  if(!it)return;
+  if(it.level<10){addLog('❌ Evrim için önce +10 yap!','lb');return;}
+  if(it.rarity==='chaos'){addLog('⚠️ Zaten max kalite!','lb');return;}
+  const cost=3;
+  if(G.runestone<cost){addLog('❌ Yeterli Rün Taşı yok! Gereken: '+cost,'lb');return;}
+  G.runestone-=cost;
+  const nextRarity=RARITY_NEXT[it.rarity];
+  it.rarity=nextRarity;
+  it.level=0;
+  it.dmg=Math.round((it.dmg||0)*1.5);
+  it.arm=Math.round((it.arm||0)*1.5);
+  G.evolCount++;
+  checkAchievements();recalc();
+  addLog('💥 EVRİM! '+it.name+' → '+nextRarity.toUpperCase()+'!','ll');
+}
+
+function attachRune(slot,runeId){
+  const it=G.equipped[slot];
+  if(!it)return;
+  if(G.runeInventory[runeId]<=0){addLog('❌ Bu rün yok!','lb');return;}
+  G.runeInventory[runeId]--;
+  it.runeId=runeId;
+  it.runeBonus=0;
+  const rune=RUNE_TYPES.find(r=>r.id===runeId);
+  if(rune)rune.apply(it);
+  recalc();
+  addLog('💠 '+rune.name+' takıldı: '+it.name,'li');
+}
+
+// ===== SAVE/LOAD =====
+function saveGame(){
+  try{
+    localStorage.setItem('ejderha_v3',JSON.stringify({
+      gold:G.gold,kills:G.kills,prestige:G.prestige,darkSoul:G.darkSoul,
+      ironDust:G.ironDust,runestone:G.runestone,
+      stage:G.stage,stageKills:G.stageKills,totalGold:G.totalGold,
+      dungDone:G.dungDone,enhCount:G.enhCount,evolCount:G.evolCount,
+      runeInventory:G.runeInventory,
+      hero:{...G.hero},skillPts:G.skillPts,sm:{...G.sm},
+      equipped:G.equipped,dungeon:G.dungeon,daily:G.daily,
+      upgrades:UPGRADES.map(u=>u.owned),
+      skillNodes:SKILL_NODES.map(s=>s.owned),
+      achievements:ACHIEVEMENTS.map(a=>({done:a.done,claimed:a.claimed})),
+      lastSave:Date.now(),
+    }));
+  }catch(e){}
+}
+
+function loadGame(){
+  try{
+    const raw=localStorage.getItem('ejderha_v3');
+    if(!raw)return;
+    const d=JSON.parse(raw);
+    Object.assign(G,{
+      gold:d.gold||0,kills:d.kills||0,prestige:d.prestige||0,darkSoul:d.darkSoul||0,
+      ironDust:d.ironDust||0,runestone:d.runestone||0,
+      stage:d.stage||1,stageKills:d.stageKills||0,totalGold:d.totalGold||0,
+      dungDone:d.dungDone||0,enhCount:d.enhCount||0,evolCount:d.evolCount||0,
+    });
+    if(d.runeInventory)G.runeInventory={...G.runeInventory,...d.runeInventory};
+    if(d.hero)G.hero={...G.hero,...d.hero};
+    G.skillPts=d.skillPts||0;
+    if(d.sm)G.sm={...G.sm,...d.sm};
+    if(d.equipped)G.equipped=d.equipped;
+    if(d.dungeon)G.dungeon={...G.dungeon,...d.dungeon};
+    if(d.daily)G.daily={...G.daily,...d.daily};
+    if(d.upgrades)d.upgrades.forEach((v,i)=>{if(UPGRADES[i])UPGRADES[i].owned=v});
+    if(d.skillNodes)d.skillNodes.forEach((v,i)=>{if(SKILL_NODES[i])SKILL_NODES[i].owned=v});
+    if(d.achievements)d.achievements.forEach((v,i)=>{if(ACHIEVEMENTS[i]){ACHIEVEMENTS[i].done=v.done;ACHIEVEMENTS[i].claimed=v.claimed}});
+    // Offline
+    const offSec=Math.min((Date.now()-(d.lastSave||Date.now()))/1000,28800);
+    if(offSec>60){
+      const gps=Math.max(1,Math.round(G.hero.dmg*0.3));
+      const xps=Math.max(1,Math.round(G.hero.dmg*0.1));
+      const dustps=Math.random()<0.3?1:0;
+      const og=Math.round(gps*offSec),ox=Math.round(xps*offSec);
+      G.gold+=og;G.totalGold+=og;G.hero.xp+=ox;
+      if(dustps)G.ironDust+=Math.round(offSec/120);
+      checkLevelUp();
+      document.getElementById('offline-time-txt').textContent=Math.round(offSec/60)+' dakika savaştın!';
+      document.getElementById('offline-rewards-txt').innerHTML='💰 +'+og+' Altın<br>⭐ +'+ox+' XP'+(dustps?'<br>🔩 +'+ Math.round(offSec/120)+' Demir Tozu':'');
+      document.getElementById('offline-popup').classList.add('show');
+    }
+    recalc();
+  }catch(e){console.log(e)}
+}
+
+function closePopup(id){document.getElementById(id).classList.remove('show')}
+
+// ===== STAGE =====
+function getStageType(s){
+  if(s%50===0)return 'mega';
+  if(s%10===0)return 'boss';
+  if(s%5===0)return 'elite';
+  return 'normal';
+}
+function getKillsNeeded(s){return getStageType(s)==='normal'?10:1}
+
+function getPool(arr,stage){
+  const pool=arr.filter(e=>e.minStage<=stage);
+  return pool.length?pool:arr.slice(0,1);
+}
+
+function makeEnemy(base,scale){
+  return {name:base.name,emoji:base.emoji,type:base.type||'normal',
+    hp:Math.round(base.hp*scale),maxHp:Math.round(base.hp*scale),
+    dmg:Math.round(base.dmg*scale),xp:Math.round(base.xp*scale),
+    gold:Math.round(base.gold*scale),dead:false};
+}
+
+function getEnemyCount(type,stage){
+  if(type==='mega'||type==='boss') return 1;
+  if(type==='elite') return stage>=50?2:1;
+  // Normal: aşama ilerledikçe daha fazla düşman
+  if(stage>=80) return 3;
+  if(stage>=40) return 2;
+  return 1;
+}
+
+function spawnEnemy(){
+  const type=getStageType(G.stage),s=G.stage;
+  const scale=1+(G.hero.lvl-1)*0.03+G.prestige*0.15;
+  let bases=[];
+  if(type==='mega'){
+    const pool=HELL_BOSSES.filter(e=>e.minStage<=s);
+    const b=pool.length?pool[pool.length-1]:HELL_BOSSES[0];
+    bases=[{...b,type:'mega'}];
+  } else if(type==='boss'){
+    const pool=getPool(BOSSES,s);
+    bases=[{...pool[pool.length-1],type:'boss'}];
+  } else if(type==='elite'){
+    const pool=getPool(ELITES,s);
+    const b={...pool[pool.length-1],type:'elite'};
+    const cnt=getEnemyCount(type,s);
+    bases=Array(cnt).fill(null).map(()=>({...b}));
+  } else {
+    const pool=getPool(NORMALS,s);
+    const recent=pool.slice(Math.max(0,pool.length-3));
+    const cnt=getEnemyCount(type,s);
+    bases=Array(cnt).fill(null).map(()=>({...recent[Math.floor(Math.random()*recent.length)],type:'normal'}));
+  }
+  G.enemies=bases.map(b=>makeEnemy(b,scale));
+  G.targetIdx=0; // aktif hedef
+  // geriye dönük uyumluluk
+  G.enemy=G.enemies[0];
+}
+
+function getActiveEnemy(){
+  // Ölmemiş ilk düşmanı bul
+  const alive=G.enemies.filter(e=>!e.dead);
+  if(!alive.length) return null;
+  G.targetIdx=G.enemies.indexOf(alive[0]);
+  return alive[0];
+}
+
+function advanceStage(){
+  G.stageKills++;G.daily.stageAdv++;
+  if(G.weekly)G.weekly.stageAdv=(G.weekly.stageAdv||0)+1;
+  if(G.stageKills>=getKillsNeeded(G.stage)){
+    G.stage++;G.stageKills=0;
+    addLog('🌠 Aşama '+G.stage+'!','ll');
+  }
+}
+
+// ===== COMBAT =====
+function addLog(msg,cls=''){G.logs.unshift({msg,cls});if(G.logs.length>60)G.logs.pop()}
+function showDmg(txt,color,x,y){
+  const el=document.createElement('div');
+  el.className='dmg-pop';el.style.color=color;
+  el.style.left=(x||100+Math.random()*130)+'px';
+  el.style.top=(y||220+Math.random()*50)+'px';
+  el.textContent=txt;document.body.appendChild(el);
+  setTimeout(()=>el.remove(),900);
+}
+
+// ===== JUICE EFFECTS =====
+function juiceHit(isCrit,isChaos){
+  const body=document.body;
+  if(isChaos||isCrit){body.classList.add('shake');setTimeout(()=>body.classList.remove('shake'),200);}
+  if(isCrit){body.classList.add('crit-flash');setTimeout(()=>body.classList.remove('crit-flash'),150);}
+}
+function juiceGold(amount){
+  if(amount<10)return;
+  const el=document.createElement('div');
+  el.className='gold-particle';
+  el.style.left=(80+Math.random()*200)+'px';
+  el.style.top=(160+Math.random()*40)+'px';
+  el.textContent='+'+amount+'🪙';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),800);
+}
+function juiceLevelUp(lvl){
+  const el=document.createElement('div');
+  el.className='lvl-popup';
+  el.style.top='180px';
+  el.textContent='⬆️ SEVİYE '+lvl+'!';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1200);
+}
+function juiceEnemyDie(idx){
+  const cards=document.querySelectorAll('.enemy-card');
+  if(cards[idx]){
+    cards[idx].style.animation='enemyDie 0.4s ease forwards';
+    setTimeout(()=>{if(cards[idx])cards[idx].style.animation='';},400);
+  }
+}
+
+// ===== SET BONUS =====
+const SETS={
+  ejderha:{name:'Ejderha Seti',emoji:'🐲',slots:['weapon','armor','ring','helmet'],
+    check:(eq)=>Object.values(eq).filter(it=>it&&it.rarity==='epic'&&it.name&&it.name.includes('Ejder')).length,
+    bonus2:'Hasar +20%',bonus4:'Tüm stat +35%, Boss hasarı +50%'},
+  efsane:{name:'Efsane Seti',emoji:'✨',slots:['weapon','armor','ring','helmet'],
+    check:(eq)=>Object.values(eq).filter(it=>it&&it.rarity==='legendary').length,
+    bonus2:'HP rejeni aktif',bonus4:'Tüm stat +50%, Kritik +15%'},
+  kaos:{name:'Kaos Seti',emoji:'🌀',slots:['weapon','armor','ring','helmet'],
+    check:(eq)=>Object.values(eq).filter(it=>it&&it.rarity==='chaos').length,
+    bonus2:'Alan hasarı açılır',bonus4:'Tüm stat +80%, Her vuruş 2 düşmana vurur'},
+  tanrisal:{name:'Tanrısal Seti',emoji:'⚡',slots:['weapon','armor','ring','helmet'],
+    check:(eq)=>Object.values(eq).filter(it=>it&&it.tier===7).length,
+    bonus2:'Tüm stat +40%',bonus4:'Olümsüzlük: HP 1e düşer, ölmezsin'},
+};
+
+function getSetBonuses(){
+  const eq=G.equipped;
+  const bonuses={dmgMult:1,armMult:1,critBonus:0,regen:false,aoe:false,aoe4:false,immortal:false,bossDmg:1};
+  Object.values(SETS).forEach(set=>{
+    const cnt=set.check(eq);
+    if(set.name==='Ejderha Seti'){
+      if(cnt>=2){bonuses.dmgMult*=1.20;}
+      if(cnt>=4){bonuses.dmgMult*=1.35;bonuses.armMult*=1.35;bonuses.bossDmg=1.5;}
+    } else if(set.name==='Efsane Seti'){
+      if(cnt>=2){bonuses.regen=true;}
+      if(cnt>=4){bonuses.dmgMult*=1.5;bonuses.armMult*=1.5;bonuses.critBonus+=0.15;}
+    } else if(set.name==='Kaos Seti'){
+      if(cnt>=2){bonuses.aoe=true;}
+      if(cnt>=4){bonuses.dmgMult*=1.8;bonuses.armMult*=1.8;bonuses.aoe4=true;}
+    } else if(set.name==='Tanrısal Seti'){
+      if(cnt>=2){bonuses.dmgMult*=1.4;bonuses.armMult*=1.4;}
+      if(cnt>=4){bonuses.immortal=true;}
+    }
+  });
+  return bonuses;
+}
+
+function heroAttack(){
+  const target=getActiveEnemy();
+  if(!target)return;
+  G.hitCount++;
+  const sb=getSetBonuses();
+  let dmg=Math.round(G.hero.dmg*sb.dmgMult);
+  const isBoss=target.type==='boss'||target.type==='mega';
+  if(isBoss)dmg=Math.round(dmg*sb.bossDmg);
+  if(G.sm.berserk&&G.hero.hp<G.hero.maxHp*0.5)dmg=Math.round(dmg*1.3);
+  const critChance=G.sm.critChance+(sb.critBonus||0);
+  let isCrit=false,isChaos=false;
+  if(G.sm.chaos&&G.hitCount%8===0){dmg*=3;isChaos=true;addLog('🌀 Kaos! '+dmg,'lo');showDmg('KAOS!'+dmg,'#c084fc');}
+  else if(Math.random()<critChance){dmg*=2;isCrit=true;addLog('💥 KRİT! '+dmg,'lo');showDmg('KRİT!'+dmg,'#f9d71c');}
+  else showDmg('-'+dmg,'#ef4444');
+  juiceHit(isCrit,isChaos);
+  if(G.sm.vamp)G.hero.hp=Math.min(G.hero.maxHp,G.hero.hp+Math.round(dmg*0.1));
+
+  // Hit animation on active enemy card
+  const cards=document.querySelectorAll('.enemy-card-emoji');
+  if(cards[G.targetIdx]){cards[G.targetIdx].classList.add('hit');setTimeout(()=>cards[G.targetIdx]&&cards[G.targetIdx].classList.remove('hit'),80);}
+
+  // AOE: Kaos seti 2+ parça - tüm düşmanlara %40 hasar
+  if(sb.aoe&&G.enemies.length>1){
+    G.enemies.forEach((e,i)=>{
+      if(e.dead||i===G.targetIdx)return;
+      const aoeDmg=Math.round(dmg*(sb.aoe4?0.7:0.4));
+      e.hp-=aoeDmg;
+      if(e.hp<=0)killEnemy(i);
+    });
+  }
+
+  // Main target damage
+  target.hp-=dmg;
+  if(target.hp<=0) killEnemy(G.targetIdx);
+
+  // Tüm düşmanlar öldüyse yeni dalga
+  if(G.enemies.every(e=>e.dead)){
+    checkLevelUp();updateDailyProg();checkAchievements();advanceStage();spawnEnemy();
+  }
+}
+
+function killEnemy(idx){
+  const e=G.enemies[idx];
+  if(!e||e.dead)return;
+  e.dead=true;
+  juiceEnemyDie(idx);
+  if(Math.random()<0.15)G.ironDust++;
+  G.gold+=e.gold;G.totalGold+=e.gold;G.daily.goldEarned+=e.gold;
+  G.kills++;G.daily.kills++;G.hero.xp+=e.xp;
+  juiceGold(e.gold);
+  const t=e.type;
+  if(t==='mega')addLog('☠️ HELL BOSS yenildi! +'+e.gold+'g','lp');
+  else if(t==='boss')addLog('👑 BOSS yenildi! +'+e.gold+'g','lo');
+  else if(t==='elite')addLog('💎 Elite yenildi! +'+e.gold+'g','li');
+  else addLog('⚔️ '+e.name+' +'+e.gold+'g','lg');
+}
+
+function enemyAttack(){
+  const alive=G.enemies?G.enemies.filter(e=>!e.dead):[];
+  if(!alive.length)return;
+  const sb=getSetBonuses();
+  // Tüm sağ düşmanlar saldırır
+  let totalDmg=0;
+  alive.forEach(e=>{totalDmg+=Math.max(1,e.dmg-Math.round(G.hero.arm*sb.armMult));});
+  if(G.sm.iron)totalDmg=Math.round(totalDmg*0.8);
+  totalDmg=Math.max(1,totalDmg);
+  showDmg('-'+totalDmg,'#f87171',70,320);
+  if(G.hero.hp<=0)return;
+  G.hero.hp-=totalDmg;
+  if(G.hero.hp<=0){
+    const sb2=getSetBonuses();
+    if(sb2.immortal){G.hero.hp=1;addLog('🌟 Tanrısal Koruma! Ölümden kurtuldun!','ll');return;}
+    G.hero.hp=Math.round(G.hero.maxHp*0.3);
+    const t=getStageType(G.stage);
+    if(t!=='normal'){
+      G.stage=Math.max(1,G.stage-1);
+      while(G.stage>1&&getStageType(G.stage)!=='normal')G.stage--;
+      G.stageKills=0;
+      addLog('💔 Boss seni ezdi! '+G.stage+'. aşamaya döndün.','lb');
+    }else addLog('💔 Yenildin!','lb');
+    spawnEnemy();
+  }
+}
+
+function checkLevelUp(){
+  while(G.hero.xp>=G.hero.xpNext){
+    G.hero.xp-=G.hero.xpNext;G.hero.lvl++;G.skillPts++;
+    G.hero.xpNext=Math.round(50*Math.pow(1.25,G.hero.lvl-1));
+    G.hero.maxHp+=25;G.hero.hp=G.hero.maxHp;
+    G.hero.baseDmg+=2;G.hero.baseArm+=1;recalc();
+    juiceLevelUp(G.hero.lvl);
+    addLog('🌟 SEVİYE '+G.hero.lvl+'! +1 Skill Puanı!','ll');
+    checkAchievements();
+  }
+}
+
+// ===== DUNGEON =====
+function checkDailyReset(){
+  const today=new Date().toDateString();
+  if(G.dungeon.lastReset!==today){
+    ['gold','xp','soul','item'].forEach(t=>{G.dungeon[t].entries=G.dungeon[t].max;G.dungeon[t].extraUsed=0;});
+    G.dungeon.lastReset=today;
+  }
+  if(G.daily.lastReset!==today){
+    G.daily={quests:makeDailyQuests(G.stage,G.hero.lvl),lastReset:today,
+      kills:0,eliteKills:0,stageAdv:0,towerFloors:0,dung:0,itemDung:0,enh:0,goldEarned:0};
+    addLog('🌅 Yeni gün! Günlük görevler sıfırlandı.','ll');
+    checkLoginStreak(today);
+  }
+  const weekKey=getWeekKey();
+  if(!G.weekly||G.weekly.lastReset!==weekKey){
+    G.weekly={quests:makeWeeklyQuests(),lastReset:weekKey,kills:0,towerMax:0,dung:0,stageAdv:0};
+    addLog('📅 Yeni hafta! Haftalık görevler sıfırlandı.','ll');
+  }
+}
+
+function getWeekKey(){
+  const d=new Date(), day=d.getDay();
+  const diff=d.getDate()-day+(day===0?-6:1);
+  return new Date(new Date().setDate(diff)).toDateString();
+}
+
+function checkLoginStreak(today){
+  const yest=new Date(Date.now()-86400000).toDateString();
+  if(G.login.lastLogin===yest) G.login.streak=Math.min((G.login.streak||0)+1,30);
+  else if(G.login.lastLogin!==today) G.login.streak=1;
+  G.login.lastLogin=today;
+  G.login.totalDays=(G.login.totalDays||0)+1;
+  G.login.todayClaimed=false;
+}
+
+function claimLoginReward(){
+  if(G.login.todayClaimed)return;
+  G.login.todayClaimed=true;
+  const s=G.login.streak||1;
+  let gold=Math.round(500+G.stage*20),soul=0,dust=0;
+  if(s>=7){soul=3;dust=5;gold=0;}
+  else if(s>=3){soul=1;gold=2000;}
+  G.gold+=gold;G.totalGold+=gold;G.darkSoul+=soul;G.ironDust+=dust;
+  addLog('📅 Giriş ödülü! ('+s+' gün streak) '+(gold?'+'+gold+'g':'')+(soul?' +'+soul+' Kara Ruh':'')+(dust?' +'+dust+' Demir Tozu':''),'ll');
+  checkAchievements();
+}
+
+
+function enterDungeon(type){
+  checkDailyReset();
+  const d=G.dungeon[type];
+  if(d.running||d.entries<=0){addLog(d.running?'⚠️ Zindan devam ediyor!':'❌ Giriş hakkı kalmadı!','lb');return;}
+  d.entries--;d.running=true;d.timer=0;
+  const sc=1+(G.stage-1)*0.05+G.hero.lvl*0.03;
+  if(type==='gold')d.reward=Math.round((200+G.stage*30)*sc);
+  else if(type==='xp')d.reward=Math.round((100+G.stage*20)*sc);
+  else if(type==='soul')d.reward=1+Math.floor(G.prestige*0.5);
+  else d.reward=0;
+  addLog('⚔️ '+(type==='gold'?'Altın':type==='xp'?'XP':type==='soul'?'Kara Ruh':'Item')+' Zindanı başladı!','li');
+}
+
+function useExtraEntry(type){
+  const d=G.dungeon[type];
+  if(d.extraUsed>=d.extraMax||G.darkSoul<=0){addLog(G.darkSoul<=0?'❌ Kara Ruh yok!':'❌ Ekstra hak doldu!','lb');return;}
+  G.darkSoul--;d.extraUsed++;d.entries++;
+  addLog('🌒 Kara Ruh kullanıldı! +1 giriş.','ll');
+}
+
+function getRandomItem(){
+  const pools=[...BASE_WEAPONS,...BASE_ARMORS,...BASE_RINGS,...BASE_HELMETS];
+  const maxIdx=Math.min(Math.floor(G.stage/8),pools.length/4);
+  const pool=pools.filter((_,i)=>i%6<=maxIdx);
+  return pool.length?pool[Math.floor(Math.random()*pool.length)]:pools[0];
+}
+function getRandomRune(){
+  const keys=['fire','ice','thunder','chaos'];
+  return keys[Math.floor(Math.random()*keys.length)];
+}
+
+function tickDungeon(){
+  ['gold','xp','soul','item'].forEach(type=>{
+    const d=G.dungeon[type];
+    if(!d.running)return;
+    d.timer++;
+    const dur=(type==='gold'||type==='xp')?180*10:300*10;
+    if(d.timer>=dur){
+      d.running=false;d.timer=0;G.dungDone++;G.daily.dung++;
+      updateDailyProg();checkAchievements();
+      if(type==='gold'){G.gold+=d.reward;G.totalGold+=d.reward;addLog('🪙 Altın Zindanı! +'+d.reward+'g','lo');}
+      else if(type==='xp'){G.hero.xp+=d.reward;addLog('⭐ XP Zindanı! +'+d.reward+' XP','lo');checkLevelUp();}
+      else if(type==='soul'){G.darkSoul+=d.reward;addLog('🌒 Kara Ruh Zindanı! +'+d.reward+' Kara Ruh','lo');}
+      else{
+        // item dungeon: drop item or rune
+        const roll=Math.random();
+        if(roll<0.5){
+          const item=getRandomItem();
+          G.equipped[item.slot]=mkEquip(item);
+          recalc();
+          document.getElementById('item-popup-txt').innerHTML='🗡️ Ekipman düştü!<br><span class="r-'+item.rarity+'">'+item.emoji+' '+item.name+'</span><br>Slota takıldı!';
+          document.getElementById('item-popup').classList.add('show');
+          addLog('🎁 Item düştü: '+item.name+'!','ll');
+        }else if(roll<0.85){
+          const ri=getRandomRune();
+          G.runeInventory[ri]++;
+          const rune=RUNE_TYPES.find(r=>r.id===ri);
+          document.getElementById('item-popup-txt').innerHTML='💠 Rün düştü!<br>'+rune.emoji+' <strong>'+rune.name+'</strong><br>Envantere eklendi!';
+          document.getElementById('item-popup').classList.add('show');
+          addLog('💠 Rün düştü: '+rune.name,'li');
+        }else{
+          G.runestone+=1;
+          addLog('💠 Rün Taşı düştü! +1','lo');
+        }
+      }
+    }
+  });
+}
+
+// ===== ACHIEVEMENTS & DAILY =====
+function checkAchievements(){
+  ACHIEVEMENTS.forEach(a=>{
+    if(a.done)return;
+    const statMap={kills:G.kills,stage:G.stage,lvl:G.hero.lvl,prestige:G.prestige,
+      dungDone:G.dungDone,enhCount:G.enhCount,evolCount:G.evolCount,
+      towerBest:T.bestFloor||0,loginStreak:G.login.streak||0};
+    const v=statMap[a.stat]||0;
+    if(v>=a.target){
+      a.done=true;
+      const name=a.hidden?'Gizli Başarım':a.name;
+      addLog('🏆 Başarım Açıldı: '+name+'!','lo');
+    }
+  });
+  updateTabNotifs();
+}
+
+function claimAchievement(id){
+  const a=ACHIEVEMENTS.find(x=>x.id===id);
+  if(!a||!a.done||a.claimed)return;
+  a.claimed=true;
+  applyReward(a.rtype,a.rval);
+  addLog('🎁 Başarım ödülü: '+a.reward,'ll');
+}
+
+function updateDailyProg(){
+  if(!G.daily.quests)return;
+  const dmap={kills:G.daily.kills,eliteKills:G.daily.eliteKills||0,
+    stageAdv:G.daily.stageAdv,towerFloors:G.daily.towerFloors||0,
+    dung:G.daily.dung,itemDung:G.daily.itemDung||0,
+    enh:G.daily.enh,goldEarned:G.daily.goldEarned};
+  G.daily.quests.forEach(q=>{if(!q.done){q.prog=dmap[q.stat]||0;if(q.prog>=q.target)q.done=true;}});
+  // Weekly progress
+  if(G.weekly&&G.weekly.quests){
+    const wmap={kills:G.weekly.kills||0,towerMax:T.bestFloor||0,dung:G.weekly.dung||0,stageAdv:G.weekly.stageAdv||0};
+    G.weekly.quests.forEach(q=>{if(!q.done){q.prog=wmap[q.stat]||0;if(q.prog>=q.target)q.done=true;}});
+  }
+  updateTabNotifs();
+}
+
+function claimWeekly(id){
+  if(!G.weekly||!G.weekly.quests)return;
+  const q=G.weekly.quests.find(x=>x.id===id);
+  if(!q||!q.done||q.claimed)return;
+  q.claimed=true;
+  applyReward(q.rtype,q.rval);
+  addLog('👑 Haftalık görev tamamlandı: +'+q.reward,'ll');
+}
+
+function claimDaily(id){
+  const q=G.daily.quests.find(x=>x.id===id);
+  if(!q||!q.done||q.claimed)return;
+  q.claimed=true;
+  applyReward(q.rtype,q.rval);
+  addLog('📋 Görev ödülü: '+q.reward,'ll');
+}
+
+function applyReward(type,val){
+  if(type==='gold'){G.gold+=val;G.totalGold+=val;}
+  else if(type==='soul')G.darkSoul+=val;
+  else if(type==='dust')G.ironDust+=val;
+  else if(type==='rune')G.runestone+=val;
+  else if(type==='both'||type==='multi'){
+    if(val.gold){G.gold+=val.gold;G.totalGold+=val.gold;}
+    if(val.soul)G.darkSoul+=val.soul;
+    if(val.dust)G.ironDust+=val.dust;
+    if(val.rune)G.runestone+=val.rune;
+  }
+}
+
+function updateTabNotifs(){
+  const ap=ACHIEVEMENTS.some(a=>a.done&&!a.claimed);
+  const dp=G.daily.quests&&G.daily.quests.some(q=>q.done&&!q.claimed);
+  document.getElementById('tb-daily').innerHTML='📋 Görev'+(dp?'<span class="nd"></span>':'');
+}
+
+// ===== TICK =====
+let ticks=0;
+function tick(){
+  ticks++;
+  if(!T.active){
+    G.heroTimer++;G.enemyTimer++;G.regenTimer++;
+    if(G.heroTimer>=Math.round(G.hero.spd/100)){G.heroTimer=0;heroAttack();}
+    if(G.enemyTimer>=20){G.enemyTimer=0;enemyAttack();}
+    const _sb=getSetBonuses();
+    if((G.sm.regen||_sb.regen)&&G.regenTimer>=50){G.regenTimer=0;G.hero.hp=Math.min(G.hero.maxHp,G.hero.hp+8);}
+    tickDungeon();
+    render();
+  } else {
+    towerTick();
+  }
+  // Update dungeon screen if open
+  if(currentDungeonType) updateDungeonScreen();
+  if(ticks%300===0)saveGame();
+}
+
+// ===== RENDER =====
+function render(){
+  const h=G.hero;
+  document.getElementById('gold-val').textContent=G.gold;
+  document.getElementById('dss-val').textContent=G.darkSoul;
+  document.getElementById('dust-val').textContent=G.ironDust;
+  document.getElementById('rune-val').textContent=G.runestone;
+  document.getElementById('kills-val').textContent=G.kills;
+  document.getElementById('stage-val').textContent=G.stage;
+  document.getElementById('prestige-val').textContent=G.prestige;
+  document.getElementById('hero-lvl').textContent=h.lvl;
+  document.getElementById('skill-pts').textContent=G.skillPts;
+  document.getElementById('skill-pts-big').textContent=G.skillPts;
+  document.getElementById('hero-hp-bar').style.width=Math.round(Math.max(0,h.hp)/h.maxHp*100)+'%';
+  document.getElementById('hero-hp-txt').textContent=Math.max(0,h.hp)+'/'+h.maxHp;
+  document.getElementById('hero-xp-bar').style.width=Math.round(h.xp/h.xpNext*100)+'%';
+  document.getElementById('hero-xp-txt').textContent=h.xp+'/'+h.xpNext;
+  document.getElementById('hero-dmg').textContent=h.dmg;
+  document.getElementById('hero-arm').textContent=h.arm;
+  document.getElementById('hero-spd').textContent=(h.spd/1000).toFixed(1);
+  const type=getStageType(G.stage),needed=getKillsNeeded(G.stage);
+  document.getElementById('stage-num').textContent='Aşama '+G.stage;
+  document.getElementById('stage-type-txt').textContent={normal:'⚔️ Normal Bölge',elite:'💎 Elite Düşman',boss:'👑 BOSS',mega:'☠️ HELL BOSS'}[type];
+  document.getElementById('kill-prog').textContent=G.stageKills+'/'+needed;
+  document.getElementById('stage-bar').style.width=Math.round(G.stageKills/needed*100)+'%';
+  const pt=['Sıradan','Deneyimli','Efsanevi','Tanrısal'];
+  document.getElementById('prestige-badge').textContent='⚔️ '+(pt[G.prestige]||'Tanrısal');
+  // Multi enemy render
+  if(G.enemies&&G.enemies.length){
+    const first=G.enemies.find(e=>!e.dead)||G.enemies[0];
+    const et=first.type;
+    const bl=document.getElementById('boss-lbl');
+    if(et==='mega')bl.innerHTML='<span class="boss-label bl-mega">☠️ HELL BOSS</span>';
+    else if(et==='boss')bl.innerHTML='<span class="boss-label bl-boss">👑 BOSS</span>';
+    else if(et==='elite')bl.innerHTML='<span class="boss-label bl-elite">💎 ELİTE</span>';
+    else bl.innerHTML=G.enemies.length>1?'<span class="boss-label bl-elite">⚔️ '+G.enemies.length+' DÜŞMAN</span>':''
+    const bcMap={normal:'#f59e0b',elite:'#c084fc',boss:'#ef4444',mega:'#dc2626'};
+    const row=document.getElementById('enemy-row');
+    row.innerHTML=G.enemies.map(function(e,i){
+      const cls=e.dead?'dead':i===G.targetIdx?'active':'';
+      const bg=bcMap[e.type]||'#f59e0b';
+      const pct=Math.round(Math.max(0,e.hp)/e.maxHp*100);
+      return '<div class="enemy-card '+cls+'">'
+        +'<span class="enemy-card-emoji">'+e.emoji+'</span>'
+        +'<div class="enemy-card-name">'+e.name+'</div>'
+        +'<div class="enemy-card-bar"><div class="enemy-card-fill" style="width:'+pct+'%;background:'+bg+'"></div></div>'
+        +'<div style="font-size:9px;color:#6b7280;margin-top:2px">'+Math.max(0,e.hp)+'/'+e.maxHp+'</div>'
+        +'</div>';
+    }).join('');
+  }
+  renderDungeon();renderEquip();renderShop();renderUpgrades();renderSkillTree();renderDaily();renderAchiev();renderLog();
+  checkUnlocks();
+}
+
+function renderDungeon(){
+  checkDailyReset();
+  const cfg=[
+    {key:'gold',label:'🪙 Altın Zindanı',cls:'db-gold',bcls:'db-bar-gold',color:'#f9d71c',dur:180},
+    {key:'xp',label:'⭐ XP Zindanı',cls:'db-xp',bcls:'db-bar-xp',color:'#60a5fa',dur:180},
+    {key:'soul',label:'🌒 Kara Ruh Zindanı',cls:'db-soul',bcls:'db-bar-soul',color:'#c084fc',dur:300},
+    {key:'item',label:'🎁 Item Zindanı',cls:'db-item',bcls:'db-bar-item',color:'#34d399',dur:300},
+  ];
+  let html=`<div class="dss-row"><span style="font-size:11px">🌒 Kara Ruh <small style="color:#6b7280">· Zindan ekstra giriş için · Reforge için</small></span><span style="font-size:14px;font-weight:600;color:#c084fc">${G.darkSoul}</span></div>`;
+  cfg.forEach(c=>{
+    const d=G.dungeon[c.key];
+    const pct=d.running?Math.round(d.timer/c.dur/10*100):0;
+    const statusTxt=d.running?('⚔️ Devam ediyor... %'+pct):(d.entries>0?'✅ Hazır':'❌ Giriş bitti');
+    html+='<div class="dungeon-card">'
+      +'<div class="dungeon-title"><span>'+c.label+'</span><span style="font-size:11px;color:'+c.color+'">'+d.entries+' giriş</span></div>'
+      +'<div class="dungeon-info">'+(c.dur===180?'3':'5')+' dakika · '+statusTxt+'</div>'
+      +(d.running?'<div class="dungeon-bar-wrap" style="margin:6px 0"><div class="dungeon-bar '+c.bcls+'" style="width:'+pct+'%"></div></div>':'')
+      +'<button class="dungeon-btn '+c.cls+'" onclick="openDungeonScreen(this.dataset.key)" data-key="'+c.key+'">🗺️ Zindana Git</button>'
+      +'</div>';
+  });
+  document.getElementById('dungeon-content').innerHTML=html;
+}
+
+function renderEquip(){
+  const u=getUnlocks();
+  const slots=[{key:'weapon',label:'⚔️ Silah'},{key:'armor',label:'🛡️ Zırh'},{key:'ring',label:'💍 Yüzük'},{key:'helmet',label:'⛑️ Miğfer'}];
+  if(u.ring2) slots.push({key:'ring2',label:'💍 Yüzük 2'});
+  if(u.amulet) slots.push({key:'amulet',label:'📿 Kolye'});
+  document.getElementById('equip-slots').innerHTML=slots.map(s=>{
+    const it=G.equipped[s.key];
+    if(!it)return `<div class="equip-slot"><div class="equip-slot-label">${s.label}</div><div class="equip-empty">— Boş —</div></div>`;
+    const lvlMult=1+it.level*0.2;
+    const effDmg=Math.round((it.dmg||0)*lvlMult);
+    const effArm=Math.round((it.arm||0)*lvlMult);
+    const rune=it.runeId?RUNE_TYPES.find(r=>r.id===it.runeId):null;
+    const enhCost=5+it.level*8;
+    const canEnh=it.level<10&&G.ironDust>=enhCost;
+    const canRef=G.darkSoul>=1;
+    const canEvo=it.level>=10&&it.rarity!=='chaos'&&G.runestone>=3;
+    const runeSlots=RUNE_TYPES.filter(r=>r.slot==='any'||r.slot===it.slot);
+    const runeOpts=runeSlots.map(r=>`<option value="${r.id}" ${G.runeInventory[r.id]>0?'':'disabled'}>${r.emoji}${r.name}(${G.runeInventory[r.id]})</option>`).join('');
+    return `<div class="equip-slot">
+      <div class="equip-slot-label">${s.label}</div>
+      <div class="equip-slot-name r-${it.rarity}">${it.emoji} ${it.name}</div>
+      <div class="equip-slot-lvl">+${it.level} · ${it.rarity.toUpperCase()}</div>
+      <div class="equip-slot-stat">${effDmg?'⚔️'+effDmg+' ':''}${effArm?'🛡️'+effArm:''}</div>
+      ${rune?`<div class="equip-slot-rune">${rune.emoji}${rune.name}</div>`:''}
+      <div class="equip-slot-btns">
+        <button class="eq-btn eq-enhance" ${canEnh?'':'disabled'} onclick="enhanceEquip('${s.key}')">+Lv(${enhCost}🔩)</button>
+        <button class="eq-btn eq-reforge" ${canRef?'':'disabled'} onclick="reforgeEquip('${s.key}')">Reforge(1🌒)</button>
+        ${canEvo?`<button class="eq-btn eq-evolve" onclick="evolveEquip('${s.key}')">EVRİM!(3💠)</button>`:''}
+      </div>
+      ${runeOpts?`<select id="rune-sel-${s.key}" style="font-size:10px;background:#1e1e30;color:#e8e8f0;border:1px solid #2a2a3d;border-radius:5px;padding:2px;width:100%;margin-top:4px"><option value="">Rün tak...</option>${runeOpts}</select>
+      <button class="eq-btn eq-rune" style="margin-top:3px;width:100%" onclick="attachRune('${s.key}',document.getElementById('rune-sel-${s.key}').value)">💠 Rün Tak</button>`:''}
+    </div>`;
+  }).join('');
+
+  // Set bonuses
+  const setHtml=Object.values(SETS).map(set=>{
+    const cnt=set.check(G.equipped);
+    const active2=cnt>=2,active4=cnt>=4;
+    const scls=active2?'set-bonus-active':'set-bonus-inactive';
+    const sprog=active4?'✅ 4 parça aktif!':active2?'✅ 2 parça aktif':'🔒 Henüz aktif değil';
+    return '<div class="'+scls+'">'
+      +'<div class="set-name">'+set.emoji+' '+set.name+' ('+cnt+'/4)</div>'
+      +'<div class="set-desc">2 parça: '+set.bonus2+'</div>'
+      +'<div class="set-desc">4 parça: '+set.bonus4+'</div>'
+      +'<div class="set-prog">'+sprog+'</div>'
+      +'</div>';
+  }).join('');
+  // insert after equip slots
+  const existingSet=document.getElementById('set-bonus-panel');
+  if(!existingSet){
+    const div=document.createElement('div');
+    div.id='set-bonus-panel';
+    div.innerHTML='<div class="section-label">🎯 Set Bonusları</div>'+setHtml;
+    document.getElementById('equip-slots').after(div);
+  } else {
+    existingSet.innerHTML='<div class="section-label">🎯 Set Bonusları</div>'+setHtml;
+  }
+
+  // Rune inventory
+  document.getElementById('rune-inventory').innerHTML=RUNE_TYPES.map(r=>`
+    <div class="rune-card">
+      <div class="rune-icon">${r.emoji}</div>
+      <div class="rune-name">${r.name}</div>
+      <div class="rune-stat">${r.desc}</div>
+      <div class="rune-count">${G.runeInventory[r.id]||0}</div>
+    </div>`).join('');
+}
+
+function renderShop(){
+  const tierNames={1:'T1 · Başlangıç',2:'T2 · Demir',3:'T3 · Gümüş',4:'T4 · Ejderha',5:'T5 · Efsane',6:'T6 · Kaos',7:'T7 · Tanrısal'};
+  const tierColors={1:'#6b7280',2:'#9ca3af',3:'#60a5fa',4:'#c084fc',5:'#f59e0b',6:'#f87171',7:'#fbbf24'};
+  let html='';
+  let lastTier=0;
+  ALL_SHOP_ITEMS.forEach((item,i)=>{
+    const eq=G.equipped[item.slot];
+    if(eq&&eq.name===item.name)return;
+    if(item.tier!==lastTier){
+      lastTier=item.tier;
+      html+=`<div style="font-size:11px;font-weight:600;color:${tierColors[item.tier]};margin:8px 0 5px;border-bottom:1px solid #2a2a3d;padding-bottom:4px">${tierNames[item.tier]||''}</div>`;
+    }
+    const can=G.gold>=item.cost;
+    const up=eq&&(item.dmg+item.arm>(eq.dmg||0)+(eq.arm||0));
+    html+=`<button class="shop-item" ${can?'':'disabled'} onclick="buyItem(${i})">
+      <div class="btn-row"><span class="r-${item.rarity}">${item.emoji} ${item.name}${up?' ⬆️':''}</span><span class="btn-cost">🪙${item.cost}g</span></div>
+      <div class="btn-desc">${item.dmg?'⚔️+'+item.dmg+' ':''}${item.arm?'🛡️+'+item.arm:''} · ${item.rarity.toUpperCase()} · Tier${item.tier}</div>
+    </button>`;
+  });
+  document.getElementById('shop-list').innerHTML=html;
+}
+
+function renderUpgrades(){
+  document.getElementById('upgrade-list').innerHTML=UPGRADES.map((u,i)=>{
+    const cost=Math.round(u.baseCost*Math.pow(1.4,u.owned));
+    const can=G.gold>=cost&&u.owned<u.max;
+    return `<button class="btn" ${can?'':'disabled'} onclick="buyUpgrade(${i})">
+      <div class="btn-row"><span>${u.name} <small style="color:#6b7280">(${u.owned}/${u.max})</small></span><span class="btn-cost">🪙${cost}g</span></div>
+      <div class="btn-desc">${u.desc}</div>
+    </button>`;
+  }).join('')+`<button class="prestige-btn" ${G.hero.lvl>=10?'':'disabled'} onclick="doPrestige()">✨ Prestij — Sıfırla +20% kalıcı güç<br><small style="opacity:0.6">Gerekli: Seviye 10</small></button>`;
+}
+
+function renderSkillTree(){
+  document.getElementById('skill-tree-list').innerHTML=SKILL_NODES.map((sk,i)=>{
+    const reqMet=!sk.req||SKILL_NODES.find(x=>x.id===sk.req)?.owned;
+    const canBuy=!sk.owned&&G.skillPts>=sk.cost&&reqMet;
+    return `<div class="sk-node ${sk.owned?'owned':!reqMet?'locked':''}" onclick="${canBuy?'buySkillNode('+i+')':''}">
+      <div class="sk-icon">${sk.emoji}</div>
+      <div class="sk-name">${sk.name}</div>
+      <div class="sk-desc">${sk.desc}</div>
+      <div class="sk-cost">${sk.owned?'✅ Aktif':!reqMet?'🔒 Kilitli':'🔮 '+sk.cost+' puan'}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderDailyItem(q, claimFn){
+  const pct=Math.min(100,Math.round(q.prog/q.target*100));
+  return '<div class="daily-item '+(q.claimed?'done':'')+'">'
+    +'<div style="font-size:20px;width:28px;text-align:center">'+(q.claimed?'✅':q.done?'🎁':'⏳')+'</div>'
+    +'<div style="flex:1">'
+    +(q.cat?'<div style="font-size:9px;color:#7c3aed;font-weight:600;margin-bottom:1px">'+q.cat+'</div>':'')
+    +'<div style="font-size:12px;font-weight:500">'+(q.hidden&&!q.done?'🔒 Gizli Başarım':q.name)+'</div>'
+    +'<div style="font-size:10px;color:#6b7280">'+(q.hidden&&!q.done?q.desc.substring(0,10)+'...':q.desc)+' · '+Math.min(q.prog,q.target)+'/'+q.target+'</div>'
+    +'<div style="font-size:10px;color:#f9d71c">Ödül: '+q.reward+'</div>'
+    +(!q.claimed?'<div class="ach-prog-bar" style="margin-top:3px"><div class="ach-prog-fill" style="width:'+pct+'%"></div></div>':'')
+    +'</div>'
+    +(q.done&&!q.claimed?'<button class="claim-btn" onclick="'+claimFn+'(\''+q.id+'\')">Al!</button>':'')
+    +'</div>';
+}
+
+function renderDaily(){
+  checkDailyReset();
+  const done=G.daily.quests.filter(q=>q.claimed).length;
+  const streak=G.login.streak||0;
+  const streakEmoji=['😴','🌱','🌿','🌳','🔥','🔥','🌟','💎'][Math.min(streak,7)];
+
+  let html='';
+  // Login streak box
+  html+='<div style="background:#12121f;border:1px solid #7c3aed;border-radius:10px;padding:10px 12px;margin-bottom:8px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+    +'<span style="font-size:12px;font-weight:600">'+streakEmoji+' Giriş Serisi: '+streak+' Gün</span>'
+    +'<button class="claim-btn" '+(G.login.todayClaimed?'disabled style="opacity:0.4"':'')+' onclick="claimLoginReward()">'+(G.login.todayClaimed?'Alındı':'Günlük Al')+'</button>'
+    +'</div>'
+    +'<div style="display:flex;gap:4px">'
+    +[1,2,3,4,5,6,7].map(d=>'<div style="flex:1;height:6px;border-radius:3px;background:'+(streak>=d?'#7c3aed':'#2a2a3d')+'"></div>').join('')
+    +'</div>'
+    +'<div style="font-size:10px;color:#6b7280;margin-top:4px">3 gün: +1 Kara Ruh | 7 gün: +3 Kara Ruh +5 Demir Tozu</div>'
+    +'</div>';
+
+  // Daily quests
+  html+='<div style="font-size:11px;color:#6b7280;margin-bottom:6px;font-weight:600">📋 GÜNLÜK GÖREVLER ('+done+'/'+G.daily.quests.length+')</div>';
+  html+=G.daily.quests.map(q=>renderDailyItem(q,'claimDaily')).join('');
+
+  // Weekly quests
+  if(G.weekly&&G.weekly.quests){
+    const wdone=G.weekly.quests.filter(q=>q.claimed).length;
+    html+='<div style="font-size:11px;color:#f59e0b;margin:10px 0 6px;font-weight:600">👑 HAFTALIK GÖREVLER ('+wdone+'/'+G.weekly.quests.length+') · Pazartesi sıfırlanır</div>';
+    html+=G.weekly.quests.map(q=>renderDailyItem(q,'claimWeekly')).join('');
+  }
+  document.getElementById('daily-content').innerHTML=html;
+}
+
+function renderAchiev(){
+  const sv={kills:G.kills,stage:G.stage,lvl:G.hero.lvl,prestige:G.prestige,
+    dungDone:G.dungDone,enhCount:G.enhCount,evolCount:G.evolCount,
+    towerBest:T.bestFloor||0,loginStreak:G.login.streak||0};
+  const total=ACHIEVEMENTS.length;
+  const claimed=ACHIEVEMENTS.filter(a=>a.claimed).length;
+  let html='<div style="font-size:11px;color:#6b7280;margin-bottom:8px">'+claimed+'/'+total+' başarım tamamlandı</div>';
+  html+=ACHIEVEMENTS.map(a=>{
+    const isHidden=a.hidden&&!a.done;
+    const v=sv[a.stat]||0;
+    const pct=Math.min(100,Math.round(v/a.target*100));
+    return '<div class="ach-item '+(a.claimed?'done':'')+'">'
+      +'<div class="ach-icon">'+(isHidden?'❓':a.emoji)+'</div>'
+      +'<div class="ach-info">'
+      +'<div class="ach-name">'+(isHidden?'🔒 Gizli Başarım':a.name)+(a.claimed?' ✅':a.done?' 🎁':'')+'</div>'
+      +'<div class="ach-desc">'+(isHidden?'???':a.desc)+'</div>'
+      +'<div class="ach-reward">Ödül: '+(isHidden?'???':a.reward)+'</div>'
+      +(!a.claimed?'<div style="font-size:10px;color:#6b7280;margin-top:1px">'+Math.min(v,a.target)+'/'+a.target+'</div><div class="ach-prog-bar"><div class="ach-prog-fill" style="width:'+pct+'%"></div></div>':'')
+      +'</div>'
+      +(a.done&&!a.claimed?'<button class="claim-btn" onclick="claimAchievement(\'' +a.id+ '\')">Al!</button>':'')
+      +'</div>';
+  }).join('');
+  document.getElementById('achiev-list').innerHTML=html;
+}
+
+function renderLog(){
+  document.getElementById('battle-log').innerHTML=G.logs.slice(0,30).map(l=>`<div class="${l.cls}">${l.msg}</div>`).join('');
+}
+
+// ===== ACTIONS =====
+function buyItem(i){
+  const it=ALL_SHOP_ITEMS[i];if(G.gold<it.cost)return;
+  G.gold-=it.cost;G.equipped[it.slot]=mkEquip(it);recalc();
+  addLog('🛒 '+it.name+' kuşanıldı!','li');
+}
+function buyUpgrade(i){
+  const u=UPGRADES[i];const cost=Math.round(u.baseCost*Math.pow(1.4,u.owned));
+  if(G.gold<cost||u.owned>=u.max)return;
+  G.gold-=cost;u.owned++;u.apply();addLog('🔧 '+u.name+' geliştirildi.','lg');
+}
+function buySkillNode(i){
+  const sk=SKILL_NODES[i];
+  const reqMet=!sk.req||SKILL_NODES.find(x=>x.id===sk.req)?.owned;
+  if(sk.owned||G.skillPts<sk.cost||!reqMet)return;
+  G.skillPts-=sk.cost;sk.owned=true;sk.apply();
+  addLog('🔮 '+sk.name+' açıldı!','ll');
+}
+function doPrestige(){
+  if(G.hero.lvl<10)return;
+  G.prestige++;
+  const nd=Math.round(5*Math.pow(1.2,G.prestige));
+  G.gold=0;G.kills=0;G.stage=1;G.stageKills=0;
+  G.hero={hp:100,maxHp:100,xp:0,xpNext:50,lvl:1,baseDmg:nd,baseArm:2,dmg:nd,arm:2,spd:1500};
+  G.skillPts=0;G.sm={dmg:1,arm:1,critChance:0.2,regen:false,berserk:false,iron:false,vamp:false,chaos:false};
+  G.equipped={weapon:null,armor:null,ring:null,helmet:null};
+  UPGRADES.forEach(u=>u.owned=0);SKILL_NODES.forEach(s=>s.owned=false);
+  G.logs=[];G.enemies=[];checkAchievements();
+  addLog('🌠 Prestij '+G.prestige+'! Yeni güçle geri döndün.','ll');
+  spawnEnemy();
+}
+
+function showTab(name){
+  ['dungeon','equip','upgrades','skilltree','daily','achiev','log'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('show',t===name);
+  });
+  document.querySelectorAll('.tab').forEach((b,i)=>{
+    b.classList.toggle('active',['dungeon','equip','upgrades','skilltree','daily','achiev','log'][i]===name);
+  });
+}
+
+// ===== TOWER MODE =====
+const T = {
+  active: false,
+  floor: 1,
+  bestFloor: 0,
+  enemy: null,
+  heroHp: 100,
+  heroTimer: 0,
+  enemyTimer: 0,
+  logs: [],
+};
+
+function getTowerFloorType(f) {
+  if(f % 50 === 0) return 'hell';
+  if(f % 10 === 0) return 'boss';
+  if(f % 5 === 0) return 'elite';
+  return 'normal';
+}
+
+function getTowerReward(f) {
+  const type = getTowerFloorType(f);
+  const base = Math.round(f * 15 * (1 + G.prestige * 0.2));
+  if(type === 'hell') return {gold: base * 20, xp: base * 10, dust: 5, desc: base*20+'g + '+base*10+' XP + 5 Demir Tozu'};
+  if(type === 'boss') return {gold: base * 5, xp: base * 3, dust: 2, desc: base*5+'g + '+base*3+' XP + 2 Demir Tozu'};
+  if(type === 'elite') return {gold: base * 2, xp: base, dust: 0, desc: base*2+'g + '+base+' XP'};
+  return {gold: base, xp: Math.round(base * 0.3), dust: 0, desc: base+'g + '+Math.round(base*0.3)+' XP'};
+}
+
+function spawnTowerEnemy() {
+  const f = T.floor;
+  const type = getTowerFloorType(f);
+  const scale = 1 + (f-1) * 0.12 + G.prestige * 0.15;
+  let base;
+  if(type === 'hell') {
+    const idx = Math.min(Math.floor(f/50)-1, HELL_BOSSES.length-1);
+    base = {...HELL_BOSSES[Math.max(0,idx)]};
+  } else if(type === 'boss') {
+    const idx = Math.min(Math.floor(f/10)-1, BOSSES.length-1);
+    base = {...BOSSES[Math.max(0,idx)]};
+  } else if(type === 'elite') {
+    const idx = Math.min(Math.floor(f/5)-1, ELITES.length-1);
+    base = {...ELITES[Math.max(0,idx)]};
+  } else {
+    const pool = getPool(NORMALS, f*2);
+    const recent = pool.slice(Math.max(0,pool.length-3));
+    base = {...recent[Math.floor(Math.random()*recent.length)]};
+  }
+  T.enemy = {
+    name: base.name, emoji: base.emoji, type: type,
+    hp: Math.round(base.hp * scale), maxHp: Math.round(base.hp * scale),
+    dmg: Math.round(base.dmg * scale),
+  };
+}
+
+function addTowerLog(msg, cls) {
+  T.logs.unshift({msg, cls: cls||''});
+  if(T.logs.length > 30) T.logs.pop();
+}
+
+function openTower() {
+  T.active = true;
+  T.heroHp = G.hero.maxHp;
+  T.heroTimer = 0; T.enemyTimer = 0;
+  T.logs = [];
+  spawnTowerEnemy();
+  document.getElementById('tower-overlay').classList.add('show');
+  addTowerLog('🏰 Kuleye girdin! Kat '+T.floor, 'll');
+}
+
+function closeTower() {
+  T.active = false;
+  document.getElementById('tower-overlay').classList.remove('show');
+}
+
+function towerTick() {
+  if(!T.active || !T.enemy) return;
+  T.heroTimer++; T.enemyTimer++;
+  const spd = Math.round(G.hero.spd / 100);
+  if(T.heroTimer >= spd) {
+    T.heroTimer = 0;
+    let dmg = G.hero.dmg;
+    const sb = getSetBonuses();
+    dmg = Math.round(dmg * sb.dmgMult);
+    if(T.enemy.type === 'boss' || T.enemy.type === 'hell') dmg = Math.round(dmg * sb.bossDmg);
+    if(G.sm.berserk && T.heroHp < G.hero.maxHp * 0.5) dmg = Math.round(dmg * 1.3);
+    const isCrit = Math.random() < G.sm.critChance;
+    if(isCrit) { dmg *= 2; addTowerLog('💥 KRİT! ' + dmg, 'lo'); }
+    if(G.sm.vamp) T.heroHp = Math.min(G.hero.maxHp, T.heroHp + Math.round(dmg * 0.1));
+    const eel = document.getElementById('tower-enemy-emoji');
+    if(eel) { eel.classList.add('hit'); setTimeout(()=>eel.classList.remove('hit'), 80); }
+    T.enemy.hp -= dmg;
+    if(T.enemy.hp <= 0) {
+      // Floor cleared!
+      const reward = getTowerReward(T.floor);
+      G.gold += reward.gold; G.totalGold += reward.gold;
+      G.hero.xp += reward.xp;
+      if(reward.dust) G.ironDust += reward.dust;
+      if(T.floor > T.bestFloor) T.bestFloor = T.floor;
+      addTowerLog('✅ Kat '+T.floor+' temizlendi! +'+reward.gold+'g', 'lg');
+      checkLevelUp();
+      T.floor++;
+      spawnTowerEnemy();
+      addTowerLog('⬆️ Kat '+T.floor+' başladı!', 'll');
+    }
+  }
+  if(T.enemyTimer >= 20) {
+    T.enemyTimer = 0;
+    const sb = getSetBonuses();
+    let dmg = Math.max(1, T.enemy.dmg - Math.round(G.hero.arm * sb.armMult));
+    if(G.sm.iron) dmg = Math.round(dmg * 0.8);
+    T.heroHp -= dmg;
+    if(T.heroHp <= 0) {
+      if(sb.immortal) { T.heroHp = 1; return; }
+      addTowerLog('💔 '+T.floor+'. katta yenildin! En yüksek: '+T.bestFloor, 'lb');
+      // Go back to last safe floor
+      T.floor = Math.max(1, T.floor - 1);
+      while(T.floor > 1 && getTowerFloorType(T.floor) !== 'normal') T.floor--;
+      T.heroHp = Math.round(G.hero.maxHp * 0.4);
+      spawnTowerEnemy();
+    }
+  }
+  renderTower();
+}
+
+function renderTower() {
+  if(!T.active || !T.enemy) return;
+  const type = getTowerFloorType(T.floor);
+  const typeLabels = {normal:'⚔️ Normal Kat', elite:'💎 Elite Kat', boss:'👑 Boss Katı', hell:'☠️ HELL BOSS KATI'};
+  const typeClasses = {normal:'ftb-normal', elite:'ftb-elite', boss:'ftb-boss', hell:'ftb-hell'};
+  const barCls = {normal:'bar bar-ehp', elite:'bar bar-elite', boss:'bar bar-boss', hell:'bar bar-boss'};
+  document.getElementById('tower-floor-num').textContent = T.floor;
+  document.getElementById('tower-floor-label').textContent = typeLabels[type];
+  document.getElementById('tower-best-num').textContent = T.bestFloor;
+  document.getElementById('tower-enemy-emoji').textContent = T.enemy.emoji;
+  document.getElementById('tower-enemy-name').textContent = T.enemy.name;
+  document.getElementById('tower-enemy-hp-bar').className = barCls[type];
+  document.getElementById('tower-enemy-hp-bar').style.width = Math.round(Math.max(0,T.enemy.hp)/T.enemy.maxHp*100)+'%';
+  document.getElementById('tower-enemy-hp-txt').textContent = Math.max(0,T.enemy.hp)+'/'+T.enemy.maxHp;
+  document.getElementById('tower-hero-hp-bar').style.width = Math.round(Math.max(0,T.heroHp)/G.hero.maxHp*100)+'%';
+  document.getElementById('tower-hero-hp-txt').textContent = Math.max(0,T.heroHp)+'/'+G.hero.maxHp;
+  document.getElementById('tower-hero-dmg').textContent = G.hero.dmg;
+  document.getElementById('tower-hero-arm').textContent = G.hero.arm;
+  document.getElementById('tower-hero-spd').textContent = (G.hero.spd/1000).toFixed(1);
+  document.getElementById('tower-boss-lbl').innerHTML = type !== 'normal' ? '<span class="floor-type-badge '+typeClasses[type]+'">'+typeLabels[type]+'</span>' : '';
+  const reward = getTowerReward(T.floor);
+  document.getElementById('tower-reward-preview').textContent = reward.desc;
+  document.getElementById('tower-log').innerHTML = T.logs.slice(0,20).map(l=>'<div class="'+l.cls+'">'+l.msg+'</div>').join('');
+}
+
+// ===== DUNGEON SCREEN =====
+const DUNGEON_CFG = {
+  gold: {
+    title:'🪙 Altın Zindanı', icon:'🪙', sceneClass:'ds-gold',
+    desc:'Karanlık mağaralarda altın avı!',
+    progressColor:'#f59e0b',
+    monsters:['👹','💀','🧟'],
+    duration:180,
+  },
+  xp: {
+    title:'⭐ XP Zindanı', icon:'⭐', sceneClass:'ds-xp',
+    desc:'Deneyim için tehlikeli bir macera!',
+    progressColor:'#3b82f6',
+    monsters:['🧙','💀','👾'],
+    duration:180,
+  },
+  soul: {
+    title:'🌒 Kara Ruh Zindanı', icon:'🌒', sceneClass:'ds-soul',
+    desc:'Karanlık ruhların beklediği zindan...',
+    progressColor:'#9333ea',
+    monsters:['👻','🌑','☠️'],
+    duration:300,
+  },
+  item: {
+    title:'🎁 Item Zindanı', icon:'🎁', sceneClass:'ds-item',
+    desc:'Efsanevi eşyaların peşinde!',
+    progressColor:'#10b981',
+    monsters:['🐉','💎','🌟'],
+    duration:300,
+  },
+};
+
+let currentDungeonType = null;
+
+function openDungeonScreen(type) {
+  currentDungeonType = type;
+  const cfg = DUNGEON_CFG[type];
+  const d = G.dungeon[type];
+  const overlay = document.getElementById('dungeon-overlay');
+
+  document.getElementById('ds-title').textContent = cfg.title;
+  document.getElementById('ds-icon').textContent = cfg.icon;
+  document.getElementById('ds-name').textContent = cfg.title;
+  document.getElementById('ds-desc').textContent = cfg.desc;
+  document.getElementById('ds-scene').className = 'dungeon-scene ' + cfg.sceneClass;
+  document.getElementById('ds-progress').style.background = cfg.progressColor;
+  document.getElementById('ds-monsters').innerHTML = cfg.monsters.map((m,i) =>
+    '<span class="dungeon-monster" style="animation-delay:'+( i*0.2)+'s">'+m+'</span>'
+  ).join('');
+
+  updateDungeonScreen();
+  overlay.classList.add('show');
+}
+
+function closeDungeonScreen() {
+  document.getElementById('dungeon-overlay').classList.remove('show');
+  currentDungeonType = null;
+}
+
+function updateDungeonScreen() {
+  if(!currentDungeonType) return;
+  const type = currentDungeonType;
+  const cfg = DUNGEON_CFG[type];
+  const d = G.dungeon[type];
+  const dur = cfg.duration * 10;
+  const pct = d.running ? Math.round(d.timer / dur * 100) : 0;
+  const secLeft = d.running ? Math.round((dur - d.timer) / 10) : cfg.duration;
+  const minLeft = Math.floor(secLeft/60);
+  const sLeft = secLeft%60;
+
+  document.getElementById('ds-progress').style.width = pct + '%';
+  document.getElementById('ds-progress-txt').textContent = d.running
+    ? (pct < 100 ? 'İlerleniyor... ' + minLeft + ':' + String(sLeft).padStart(2,'0') + ' kaldı (%' + pct + ')' : 'Tamamlandı! 🎉')
+    : 'Giriş yapmak için hazır';
+
+  const scale = 1+(G.stage-1)*0.05+G.hero.lvl*0.03;
+  const reward = type==='gold' ? Math.round((200+G.stage*30)*scale)
+    : type==='xp' ? Math.round((100+G.stage*20)*scale)
+    : type==='soul' ? (1+Math.floor(G.prestige*0.5))
+    : 0;
+
+  document.getElementById('ds-reward-box').innerHTML = d.running
+    ? '⚔️ Kahraman içeride savaşıyor...<br>Tahmini ödül: <strong>' + (reward > 0 ? reward + (type==='gold'?'g':type==='xp'?' XP':' Kara Ruh') : 'Ekipman/Rün') + '</strong>'
+    : '🎁 Ödül: <strong>' + (reward > 0 ? reward + (type==='gold'?'g':type==='xp'?' XP':' Kara Ruh') : 'Rastgele Ekipman veya Rün') + '</strong>';
+
+  document.getElementById('ds-entry-info').innerHTML =
+    '<div class="dungeon-entry-row"><span>Giriş hakkı</span><span style="color:#f9d71c">' + d.entries + ' / ' + d.max + '</span></div>'
+    + '<div class="dungeon-entry-row"><span>Ekstra giriş kullanılan</span><span style="color:#c084fc">' + d.extraUsed + ' / ' + d.extraMax + '</span></div>'
+    + '<div class="dungeon-entry-row"><span>Kara Ruh</span><span style="color:#c084fc">' + G.darkSoul + ' adet</span></div>';
+
+  const btns = document.getElementById('ds-action-btns');
+  if(d.running) {
+    btns.innerHTML = '<button onclick="closeDungeonScreen()" style="background:#1e1e30;color:#9ca3af">← Ana Ekrana Dön</button>';
+  } else {
+    const canEnter = d.entries > 0;
+    const canExtra = G.darkSoul > 0 && d.extraUsed < d.extraMax;
+    btns.innerHTML =
+      '<button onclick="startDungeonFromScreen()" style="background:linear-gradient(90deg,'+(type==='gold'?'#92400e,#d97706':type==='xp'?'#1e3a8a,#2563eb':type==='soul'?'#1a0a2e,#4c1d95':'#064e3b,#065f46')+';color:#fff;opacity:'+(canEnter?1:0.4)+'" '+(canEnter?'':'disabled')+'>⚔️ Zindana Gir</button>'
+      + '<button onclick="extraEntryFromScreen()" style="background:linear-gradient(90deg,#1a0a2e,#4c1d95);color:#e9d5ff;opacity:'+(canExtra?1:0.4)+'" '+(canExtra?'':'disabled')+'>🌒 Kara Ruh +1</button>';
+  }
+}
+
+function startDungeonFromScreen() {
+  if(!currentDungeonType) return;
+  enterDungeon(currentDungeonType);
+  updateDungeonScreen();
+}
+
+function extraEntryFromScreen() {
+  if(!currentDungeonType) return;
+  useExtraEntry(currentDungeonType);
+  updateDungeonScreen();
+}
+
+// ===== PROGRESSION MILESTONES =====
+function getUnlocks(){
+  const s=G.stage, lv=G.hero.lvl;
+  return {
+    ring2:  s>=25,   // Aşama 25: İkinci yüzük slotu
+    amulet: s>=50,   // Aşama 50: Kolye slotu
+    rune2:  lv>=20,  // Seviye 20: Rün geliştirme
+    dungeon3: s>=30, // Aşama 30: Zindan 3. giriş hakkı
+  };
+}
+
+function checkUnlocks(){
+  const u=getUnlocks();
+  const banner=document.getElementById('unlock-banner');
+  if(!banner)return;
+  const msgs=[];
+  if(u.ring2) msgs.push('💍 İkinci Yüzük Slotu açık!');
+  if(u.amulet) msgs.push('📿 Kolye Slotu açık!');
+  if(u.dungeon3 && G.dungeon.gold.max<3){
+    G.dungeon.gold.max=3;G.dungeon.xp.max=3;
+    msgs.push('🏰 Zindan günlük giriş: 3e yükseltildi!');
+  }
+  if(msgs.length){banner.style.display='block';banner.innerHTML='🔓 '+msgs.join(' · ');}
+  else banner.style.display='none';
+}
+
+// ===== INIT =====
+if(!G.enemies||!G.enemies.length) G.enemies=[];
+loadGame();
+spawnEnemy();
+checkAchievements();
+updateTabNotifs();
+addLog('🐉 Ejderha Hanına hoş geldin! Gücün sınırı yok!','ll');
+setInterval(tick,100);
+setInterval(saveGame,30000);
+</script>
+</body>
+</html>
